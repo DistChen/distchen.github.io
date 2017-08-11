@@ -1,0 +1,827 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="web,sso," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="CAS （ Central Authentication Service ） 是 Yale 大学发起的一个企业级的、开源的项目，旨在为 Web 应用系统提供一种可靠的单点登录解决方法（属于 Web SSO ）。在这篇文章(http://www.coin163.com/java/cas/cas.html)里面有对CAS 的一些介绍，这里我就不进行介绍了，我直接说我的实践过程和改造过程。
+这里说下我对">
+<meta property="og:type" content="article">
+<meta property="og:title" content="单点登录(SSO) CAS 实践">
+<meta property="og:url" content="http://www.chenyp.com/2016/11/01/cas-sso/index.html">
+<meta property="og:site_name" content="DistChen">
+<meta property="og:description" content="CAS （ Central Authentication Service ） 是 Yale 大学发起的一个企业级的、开源的项目，旨在为 Web 应用系统提供一种可靠的单点登录解决方法（属于 Web SSO ）。在这篇文章(http://www.coin163.com/java/cas/cas.html)里面有对CAS 的一些介绍，这里我就不进行介绍了，我直接说我的实践过程和改造过程。
+这里说下我对">
+<meta property="og:image" content="http://www.chenyp.com/img/2438699198239545948.jpg">
+<meta property="og:image" content="http://www.chenyp.com/img/6619493206794166566.jpg">
+<meta property="og:image" content="http://www.chenyp.com/img/2618561708357350517.jpg">
+<meta property="og:image" content="http://www.chenyp.com/img/6630088100839915623.jpg">
+<meta property="og:image" content="http://www.chenyp.com/img/1155454779415325015.jpg">
+<meta property="og:image" content="http://www.chenyp.com/img/6597221499263531778.png">
+<meta property="og:image" content="http://www.chenyp.com/img/3113957667368264452.png">
+<meta property="og:image" content="http://www.chenyp.com/img/648518346359428144.jpg">
+<meta property="og:image" content="http://www.chenyp.com/img/2443765747820211242.png">
+<meta property="og:image" content="http://www.chenyp.com/img/6619270005933724609.jpg">
+<meta property="og:updated_time" content="2016-11-16T06:29:07.433Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="单点登录(SSO) CAS 实践">
+<meta name="twitter:description" content="CAS （ Central Authentication Service ） 是 Yale 大学发起的一个企业级的、开源的项目，旨在为 Web 应用系统提供一种可靠的单点登录解决方法（属于 Web SSO ）。在这篇文章(http://www.coin163.com/java/cas/cas.html)里面有对CAS 的一些介绍，这里我就不进行介绍了，我直接说我的实践过程和改造过程。
+这里说下我对">
+<meta name="twitter:image" content="http://www.chenyp.com/img/2438699198239545948.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'DistChen'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.chenyp.com/2016/11/01/cas-sso/"/>
+
+
+
+
+
+  <title> 单点登录(SSO) CAS 实践 | DistChen </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?540e274718a25b28e12d4a5c890221bd";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta custom-logo">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">DistChen</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://www.chenyp.com/2016/11/01/cas-sso/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="DistChen">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="DistChen">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="DistChen" src="avatar.jpg">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                单点登录(SSO) CAS 实践
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-01T09:29:59+08:00">
+              2016-11-01
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2016-11-16T14:29:07+08:00">
+              2016-11-16
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/sso/" itemprop="url" rel="index">
+                    <span itemprop="name">sso</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+                <!--noindex-->
+                <span class="post-comments-count">
+                <span class="post-meta-divider">&nbsp; | &nbsp;</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                
+                    <a href="/2016/11/01/cas-sso/#SOHUCS" itemprop="discussionUrl">
+                      <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2016/11/01/cas-sso/" itemprop="commentsCount"></span>
+                    </a>
+                  &nbsp;条
+                
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-eye"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+              </span>
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>CAS （ Central Authentication Service ） 是 Yale 大学发起的一个企业级的、开源的项目，旨在为 Web 应用系统提供一种可靠的单点登录解决方法（属于 Web SSO ）。在这篇文章(<a href="http://www.coin163.com/java/cas/cas.html" target="_blank" rel="external">http://www.coin163.com/java/cas/cas.html</a>)里面有对CAS 的一些介绍，这里我就不进行介绍了，我直接说我的实践过程和改造过程。</p>
+<p>这里说下我对cas 这个sso解决方案的看法：cas基于session。因为我们每打开一个浏览器，都会生成一个session，该session 的id值 以cookie 的形式保存在浏览器中，当浏览器关闭或者手动设置 session 失效 invalidate的时候，保留session id 值的cookie会消失。所以当访问某个web应用程序时，如果request 所携带的头消息中的sessionid没有在sso验证中心检测到，那么就会自动跳转到sso验证中心提供的登录页面去进行登录，然后再将请求返回；如果有检测到对应的sessionid，那么就可以直接访问程序。所以cas的模式就是一个验证中心，多个客户端，登录、注销等页面由sso统一提供。</p>
+<a id="more"></a>
+<p>通过网上学习和自己的摸索实践，下面的过程是我完整实现单点登录的过程：</p>
+<h2 id="配置服务器"><a href="#配置服务器" class="headerlink" title="配置服务器"></a>配置服务器</h2><h3 id="下载-cas-server"><a href="#下载-cas-server" class="headerlink" title="下载 cas-server"></a>下载 cas-server</h3><p>我下的最新版本cas-server-4.0.0，下载地址<a href="http://www.ja-sig.org/downloads/cas/" target="_blank" rel="external">http://www.ja-sig.org/downloads/cas/</a>;下载下来的文件是一个压缩包，解压后将modules文件中的cas-server-webapp-4.0.0.war 复制到tomcat 的webapps 目录中</p>
+<p><img src="/img/2438699198239545948.jpg" alt="这里写图片描述"></p>
+<p><strong>注：压缩包内的其他文件夹都是modules文件夹中对应jar包的源码。是一个maven的聚合项目，所以最好使用maven来构建。</strong><br>将cas-server-webapp-4.0.0.war 包放入 webapps目录后。启动tomcat，cas-server 就能自动发布并使用了。默认的登录页面如下:</p>
+<p><img src="/img/6619493206794166566.jpg" alt="这里写图片描述"></p>
+<h3 id="更改语言"><a href="#更改语言" class="headerlink" title="更改语言"></a>更改语言</h3><p>在上图中可以看到，显示语言是英语，我们需要改为中文。定位到cas-server-webapp-4.0.0\WEB-INF\classes文件夹，删除原有的message.properties 文件，复制messages_zh_CN.properties 并重命名为message.properties，重启tomcat，显示语言就会变成中文，如下所示</p>
+<p><img src="/img/2618561708357350517.jpg" alt="这里写图片描述"></p>
+<p> 或者可以给对应页面的body加上 lang=’zh_CN’ 实现，如下所示:</p>
+<p><img src="/img/6630088100839915623.jpg" alt="这里写图片描述"></p>
+<h3 id="配置用户数据源"><a href="#配置用户数据源" class="headerlink" title="配置用户数据源"></a>配置用户数据源</h3><p>可以看到在登录页面中有输入用户名和密码的输入框，我都没设置用户名数据的来源，输什么呢，在哪里设置用户数据来源呢？打开cas-server-webapp-4.0.0\WEB-INF\ deployerConfigContext.xml 文件，找到如下节点:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"primaryAuthenticationHandler"</span></span></div><div class="line">      <span class="attr">class</span>=<span class="string">"org.jasig.cas.authentication.AcceptUsersAuthenticationHandler"</span>&gt;</div><div class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"users"</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">map</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">entry</span> <span class="attr">key</span>=<span class="string">"casuser"</span> <span class="attr">value</span>=<span class="string">"Mellon"</span>/&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">map</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>这里就是用户数据来源，也就是说在之前的登录页面中，输入用户名 casuser，密码Mellon，就能正常登录了。如果这么指定用户数据来源，那也就太不科学了。Cas支持从数据库、ldap等获取数据，我用测试表(sys_users)配置了数据来源，注释掉上图中的bean，然后再该文件中新增如下两个bean，如下所示:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"> <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"casDataSource"</span> <span class="attr">class</span>=<span class="string">"org.apache.commons.dbcp.BasicDataSource"</span>&gt;</span></div><div class="line">     <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"driverClassName"</span>&gt;</span></div><div class="line">          <span class="tag">&lt;<span class="name">value</span>&gt;</span>oracle.jdbc.driver.OracleDriver<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">     <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">     <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"url"</span>&gt;</span></div><div class="line">          <span class="tag">&lt;<span class="name">value</span>&gt;</span>jdbc:oracle:thin:@127.0.0.1:1521:orcl<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">     <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">     <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"username"</span>&gt;</span></div><div class="line">          <span class="tag">&lt;<span class="name">value</span>&gt;</span>sjzx<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">     <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">     <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"password"</span>&gt;</span></div><div class="line">          <span class="tag">&lt;<span class="name">value</span>&gt;</span>suplis<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">     <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"primaryAuthenticationHandler"</span></span></div><div class="line">         <span class="attr">class</span>=<span class="string">"org.jasig.cas.adaptors.jdbc.SearchModeSearchDatabaseAuthenticationHandler"</span></div><div class="line">         <span class="attr">abstract</span>=<span class="string">"false"</span></div><div class="line">         <span class="attr">lazy-init</span>=<span class="string">"default"</span> <span class="attr">autowire</span>=<span class="string">"default"</span>&gt;</div><div class="line">	  <span class="tag">&lt;<span class="name">property</span>  <span class="attr">name</span>=<span class="string">"tableUsers"</span>&gt;</span></div><div class="line">	  	<span class="tag">&lt;<span class="name">value</span>&gt;</span>sys_users<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">	  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">	  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"fieldUser"</span>&gt;</span></div><div class="line">	   <span class="tag">&lt;<span class="name">value</span>&gt;</span>loginname<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">	  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">	  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"fieldPassword"</span>&gt;</span></div><div class="line">	   <span class="tag">&lt;<span class="name">value</span>&gt;</span>userpwd<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">	  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">	  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dataSource"</span> <span class="attr">ref</span>=<span class="string">"casDataSource"</span> /&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>其中，id 为casDataSource 的bean指定了数据源，id 为 primaryAuthenticationHandler 指定了验证处理器的验证规则，即从casDataSource 取表名为 sys_users 当作用户数据表，loginname字段数据当作用户名，userpwd字段当作密码来进行验证。上图中的验证处理器除了SearchModeSearchDatabaseAuthenticationHandler类，还有一些其他的验证类，以便支持各种不同的数据来源。我们也可以扩展AuthenticationHandler 类来实现自己的验证器，比如QueryDatabaseAuthenticationHandler 验证器的使用方式如下:<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"primaryAuthenticationHandler"</span></span></div><div class="line">         <span class="attr">class</span>=<span class="string">"org.jasig.cas.adaptors.jdbc.QueryDatabaseAuthenticationHandler"</span>&gt;</div><div class="line">	  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dataSource"</span> <span class="attr">ref</span>=<span class="string">"casDataSource"</span> /&gt;</span></div><div class="line">	  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"sql"</span>  <span class="attr">ref</span>=<span class="string">"select userpwd from sys_users where lower(loginname)=lower(?)"</span>/&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>上图的效果与使用SearchModeSearchDatabaseAuthenticationHandler类的效果一样。注:需要将modules 文件夹中的cas-server-support-jdbc-4.0.0.jar包拷贝到lib下:</p>
+<p><img src="/img/1155454779415325015.jpg" alt="这里写图片描述"></p>
+<h3 id="指定加密方式"><a href="#指定加密方式" class="headerlink" title="指定加密方式"></a>指定加密方式</h3><p>cas如何将我们通过输入框输入的明文密码按照我们的加密方式加密成密文呢？所幸cas提供了这样的接口(不然就不科学了)，同样的打开cas-server-webapp-4.0.0\WEB-INF\deployerConfigContext.xml文件，新增如下一个bean:<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"passwordEncoder"</span> <span class="attr">class</span>=<span class="string">"dist.sso.EncryptDAP"</span> /&gt;</span></div></pre></td></tr></table></figure></p>
+<p>然后为在上一步新增的id为primaryAuthenticationHandler 的bean中添加如下一个passwordEncoder属性<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"primaryAuthenticationHandler"</span></span></div><div class="line">         <span class="attr">class</span>=<span class="string">"org.jasig.cas.adaptors.jdbc.SearchModeSearchDatabaseAuthenticationHandler"</span></div><div class="line">         <span class="attr">abstract</span>=<span class="string">"false"</span></div><div class="line">         <span class="attr">lazy-init</span>=<span class="string">"default"</span> <span class="attr">autowire</span>=<span class="string">"default"</span>&gt;</div><div class="line">	  <span class="tag">&lt;<span class="name">property</span>  <span class="attr">name</span>=<span class="string">"tableUsers"</span>&gt;</span></div><div class="line">	  	<span class="tag">&lt;<span class="name">value</span>&gt;</span>sys_users<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">	  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">	  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"fieldUser"</span>&gt;</span></div><div class="line">	   <span class="tag">&lt;<span class="name">value</span>&gt;</span>loginname<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">	  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">	  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"fieldPassword"</span>&gt;</span></div><div class="line">	   <span class="tag">&lt;<span class="name">value</span>&gt;</span>userpwd<span class="tag">&lt;/<span class="name">value</span>&gt;</span></div><div class="line">	  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></div><div class="line">	  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"dataSource"</span> <span class="attr">ref</span>=<span class="string">"casDataSource"</span> /&gt;</span></div><div class="line">	  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"passwordEncoder"</span>  <span class="attr">ref</span>=<span class="string">"passwordEncoder"</span>/&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p><strong>注: dist.sso.EncryptDAP类是我自行按照我的加密方式编译的一个类，不是cas提供的，该类要实现cas提供的 PasswordEncoder 接口及其 encode() 方法。</strong></p>
+<h3 id="为-tomcat-启用-https"><a href="#为-tomcat-启用-https" class="headerlink" title="为 tomcat 启用 https"></a>为 tomcat 启用 https</h3><p>到了这里，就能用自己库中的数据来完成用户的验证了。虽然直接在验证中心可以验证通过了，但是在服务器集成的时候却还是有问题的，因为客户端在集成4.0.0版本的cas-server时，配置sso地址时只能配置sso的https地址，不能配置http地址(以前的版本可以，具体是从哪个版本开始有了这个限制我还没查到)。就像第一张图中的那样，当我们以http协议访问sso时，页面的显著位置会如下警告提示:</p>
+<p><img src="/img/6597221499263531778.png" alt="这里写图片描述"></p>
+<p>所以我们得为tomcat启用https支持。具体做法请参考我的另一篇文章<a href="http://www.chenyp.com/2015/06/11/tomcat-https/">《Tomat HTTPS 单向认证》</a>。</p>
+<h2 id="客户端集成sso"><a href="#客户端集成sso" class="headerlink" title="客户端集成sso"></a>客户端集成sso</h2><p>上一步完成后，cas 的验证中心就已经准备就绪了，接下来需要客户端集成到sso中了。Cas提供的方式是filter，也就是在请求具体某个web资源时，服务器会先将request发送到filter进行过滤，过滤通过后才将请求发送到具体的某个资源。</p>
+<h3 id="下载cas-client-我下载的-cas-client-3-1-12"><a href="#下载cas-client-我下载的-cas-client-3-1-12" class="headerlink" title="下载cas-client(我下载的 cas-client-3.1.12"></a>下载cas-client(我下载的 cas-client-3.1.12</h3><p>下载地址<a href="http://www.ja-sig.org/downloads/cas-clients" target="_blank" rel="external">http://www.ja-sig.org/downloads/cas-clients</a>。在下载来的压缩包的modules文件夹中找到cas-client-core-3.1.12.jar 包，拷贝到具体某个 web程序的lib目录中</p>
+<p><img src="/img/3113957667368264452.png" alt="这里写图片描述"></p>
+<p>编辑具体web程序的 web.xml，添加如下的Listener 和 Filter;其中监听器是对注销操作的监听，这样当某个用户注销后，web程序能够立刻感知到，而filter是对用户的请求进行过滤，这个过滤操作会携带 request中的sessionid 到sso中去进行会话有效性的验证。<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- ======================== 单点登录开始 ======================== --&gt;</span>  </div><div class="line">    <span class="comment">&lt;!-- 用于单点退出，该过滤器用于实现单点登出功能，可选配置 --&gt;</span>  </div><div class="line">    <span class="tag">&lt;<span class="name">listener</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">listener-class</span>&gt;</span>org.jasig.cas.client.session.SingleSignOutHttpSessionListener<span class="tag">&lt;/<span class="name">listener-class</span>&gt;</span>  </div><div class="line">    <span class="tag">&lt;/<span class="name">listener</span>&gt;</span>  </div><div class="line">    <span class="comment">&lt;!-- 该过滤器用于实现单点登出功能，可选配置。 --&gt;</span>  </div><div class="line">    <span class="tag">&lt;<span class="name">filter</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS Single Sign Out Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>org.jasig.cas.client.session.SingleSignOutFilter<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span>  </div><div class="line">    <span class="tag">&lt;/<span class="name">filter</span>&gt;</span>  </div><div class="line">    <span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS Single Sign Out Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span>  </div><div class="line">    <span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span>  </div><div class="line">    <span class="comment">&lt;!-- 该过滤器负责用户的认证工作，必须启用它 --&gt;</span>  </div><div class="line">    <span class="tag">&lt;<span class="name">filter</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CASFilter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>org.jasig.cas.client.authentication.AuthenticationFilter<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">init-param</span>&gt;</span>  </div><div class="line">            <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>casServerLoginUrl<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span>  </div><div class="line">            <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>https://localhost:8443/distsso/login<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span>  </div><div class="line">            <span class="comment">&lt;!--这里的server是服务端的IP --&gt;</span>  </div><div class="line">        <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">init-param</span>&gt;</span>  </div><div class="line">            <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>serverName<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span>  </div><div class="line">            <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>http://localhost:8080<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">filter</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CASFilter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span>  </div><div class="line">    <span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span></div><div class="line">    <span class="comment">&lt;!-- 该过滤器负责对Ticket的校验工作，必须启用它 --&gt;</span>  </div><div class="line">    <span class="tag">&lt;<span class="name">filter</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS Validation Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>  </div><div class="line">            org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">init-param</span>&gt;</span>  </div><div class="line">            <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>casServerUrlPrefix<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span>  </div><div class="line">            <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>https://localhost:8443/distsso<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">init-param</span>&gt;</span>  </div><div class="line">            <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>serverName<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span>  </div><div class="line">            <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>http://localhost:8080<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span>  </div><div class="line">    <span class="tag">&lt;/<span class="name">filter</span>&gt;</span>  </div><div class="line">    <span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS Validation Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span>  </div><div class="line">    <span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span></div><div class="line">    <span class="comment">&lt;!-- 该过滤器负责实现HttpServletRequest请求的包裹， 比如允许开发者通过HttpServletRequest的getRemoteUser()方法获得SSO登录用户的登录名，可选配置。 --&gt;</span>  </div><div class="line">    <span class="tag">&lt;<span class="name">filter</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS HttpServletRequest Wrapper Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>org.jasig.cas.client.util.HttpServletRequestWrapperFilter<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span>  </div><div class="line">    <span class="tag">&lt;/<span class="name">filter</span>&gt;</span>  </div><div class="line">    <span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS HttpServletRequest Wrapper Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span>  </div><div class="line">    <span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span></div><div class="line">    <span class="comment">&lt;!-- 该过滤器使得开发者可以通过org.jasig.cas.client.util.AssertionHolder来获取用户的登录名。 比如AssertionHolder.getAssertion().getPrincipal().getName()。 --&gt;</span>  </div><div class="line">    <span class="tag">&lt;<span class="name">filter</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS Assertion Thread Local Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>org.jasig.cas.client.util.AssertionThreadLocalFilter<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span>  </div><div class="line">    <span class="tag">&lt;/<span class="name">filter</span>&gt;</span>  </div><div class="line">    <span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>CAS Assertion Thread Local Filter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span>  </div><div class="line">        <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span>  </div><div class="line">    <span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span>  </div><div class="line">    <span class="comment">&lt;!-- ======================== 单点登录结束 ======================== --&gt;</span></div></pre></td></tr></table></figure></p>
+<p>至此，所有的准备工作已经完成，用户在请求某个集成了 cas 的程序时，会自动跳转到cas提供的登录页面去进行用户认证，验证通过后，再返回到最开始请求的页面。比如当我请求<a href="http://locahost:8080/DistSSOClient1" target="_blank" rel="external">http://locahost:8080/DistSSOClient1</a>时，页面会跳转到<a href="https://localhost:8443/distsso/login?service=http%3A%2F%2Flocalhost%3A8080%2FDistSSOClient1%2F" target="_blank" rel="external">https://localhost:8443/distsso/login?service=http%3A%2F%2Flocalhost%3A8080%2FDistSSOClient1%2F</a>，也就是 sso的登录界面，而且多了一个参数，该参数就是登录成功后的回调页面，也就是在跳转到该页面之前请求的页面(这个页面只完成当前登录用户的用户名显示)，如下所示:</p>
+<p><img src="/img/648518346359428144.jpg" alt="这里写图片描述"></p>
+<p>登录成功后，如下所示：</p>
+<p><img src="/img/2443765747820211242.png" alt="这里写图片描述"></p>
+<p>这个时候如果再去访问同样集成了cas的第二个程序 DistSSOClient2 ,就不在需要验证了，可以直接访问。如果验证失败，如下所示:</p>
+<p><img src="/img/6619270005933724609.jpg" alt="这里写图片描述"></p>
+<p>说明:上述的登录页面是我自己重新编写的，不足之处，烦请指正。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechat.png" alt="DistChen WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.png" alt="DistChen Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/web/" rel="tag"># web</a>
+          
+            <a href="/tags/sso/" rel="tag"># sso</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/08/16/tag-input/" rel="next" title="标签式的选择输入框">
+                <i class="fa fa-chevron-left"></i> 标签式的选择输入框
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/11/14/browser-cache/" rel="prev" title="浏览器缓存与访问方式">
+                浏览器缓存与访问方式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="SOHUCS" ></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/avatar.png"
+               alt="DistChen" />
+          <p class="site-author-name" itemprop="name">DistChen</p>
+          <p class="site-description motion-element" itemprop="description">梦想还是要有的，万一实现了呢？</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">35</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/DistChen" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/ooqingkuangoo" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#配置服务器"><span class="nav-number">1.</span> <span class="nav-text">配置服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下载-cas-server"><span class="nav-number">1.1.</span> <span class="nav-text">下载 cas-server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#更改语言"><span class="nav-number">1.2.</span> <span class="nav-text">更改语言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置用户数据源"><span class="nav-number">1.3.</span> <span class="nav-text">配置用户数据源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#指定加密方式"><span class="nav-number">1.4.</span> <span class="nav-text">指定加密方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为-tomcat-启用-https"><span class="nav-number">1.5.</span> <span class="nav-text">为 tomcat 启用 https</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#客户端集成sso"><span class="nav-number">2.</span> <span class="nav-text">客户端集成sso</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下载cas-client-我下载的-cas-client-3-1-12"><span class="nav-number">2.1.</span> <span class="nav-text">下载cas-client(我下载的 cas-client-3.1.12</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">DistChen</span> ● 
+  <a href="http://www.miitbeian.gov.cn">鄂ICP备17010195号-2</a>
+</div>
+
+
+<div class="powered-by">
+  邮箱： <a class="theme-link" href="mailto:chenyp@chenyp.com">chenyp@chenyp.com</a> 
+</div>
+
+<div class="theme-info">
+  <a class="theme-link" title="365061362" target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=365061362&site=qq&menu=yes">QQ联系</a>
+</div>
+
+
+        
+
+<span class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-user"></i>访客人数:<span class="busuanzi-value" id="busuanzi_value_site_uv">0</span>人</span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i>访问次数:<span class="busuanzi-value" id="busuanzi_value_site_pv">0</span>次</span>
+  
+  
+</span>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+	
+		 <script type="text/javascript"> 
+		(function(){ 
+		var appid = 'cyt42c1yO'; 
+		var conf = 'c2e8cb34856682963b6040051360b87f'; 
+		var width = window.innerWidth || document.documentElement.clientWidth; 
+		if (width < 960) { 
+		window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); } })(); </script>
+		<script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+	
+
+  
+  
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

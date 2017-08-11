@@ -1,0 +1,878 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="web,java," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="关于 字符、字符集、字符编码、ASCII、GB2312、GBK、Unicode、UTF-8等名词，这是理解乱码问题的基本，在继续往下看之前，请先理解这些概念，大家可参考此篇文章，个人觉得值得一看。
+
+http://www.cnblogs.com/skynet/archive/2011/05/03/2035105.html
+
+在这篇文章中，将这些名称解释的很清楚。但并没有对java编译和前后端编码、">
+<meta property="og:type" content="article">
+<meta property="og:title" content="字符编码及不同场景下的编码和解码">
+<meta property="og:url" content="http://www.chenyp.com/2017/03/29/encode/index.html">
+<meta property="og:site_name" content="DistChen">
+<meta property="og:description" content="关于 字符、字符集、字符编码、ASCII、GB2312、GBK、Unicode、UTF-8等名词，这是理解乱码问题的基本，在继续往下看之前，请先理解这些概念，大家可参考此篇文章，个人觉得值得一看。
+
+http://www.cnblogs.com/skynet/archive/2011/05/03/2035105.html
+
+在这篇文章中，将这些名称解释的很清楚。但并没有对java编译和前后端编码、">
+<meta property="og:updated_time" content="2017-03-31T07:39:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="字符编码及不同场景下的编码和解码">
+<meta name="twitter:description" content="关于 字符、字符集、字符编码、ASCII、GB2312、GBK、Unicode、UTF-8等名词，这是理解乱码问题的基本，在继续往下看之前，请先理解这些概念，大家可参考此篇文章，个人觉得值得一看。
+
+http://www.cnblogs.com/skynet/archive/2011/05/03/2035105.html
+
+在这篇文章中，将这些名称解释的很清楚。但并没有对java编译和前后端编码、">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'DistChen'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.chenyp.com/2017/03/29/encode/"/>
+
+
+
+
+
+  <title> 字符编码及不同场景下的编码和解码 | DistChen </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?540e274718a25b28e12d4a5c890221bd";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta custom-logo">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">DistChen</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://www.chenyp.com/2017/03/29/encode/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="DistChen">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="DistChen">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="DistChen" src="avatar.jpg">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                字符编码及不同场景下的编码和解码
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-03-29T18:26:22+08:00">
+              2017-03-29
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2017-03-31T15:39:27+08:00">
+              2017-03-31
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/web/" itemprop="url" rel="index">
+                    <span itemprop="name">web</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+                <!--noindex-->
+                <span class="post-comments-count">
+                <span class="post-meta-divider">&nbsp; | &nbsp;</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                
+                    <a href="/2017/03/29/encode/#SOHUCS" itemprop="discussionUrl">
+                      <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2017/03/29/encode/" itemprop="commentsCount"></span>
+                    </a>
+                  &nbsp;条
+                
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-eye"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+              </span>
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>关于 <code>字符</code>、<code>字符集</code>、<code>字符编码</code>、<code>ASCII</code>、<code>GB2312</code>、<code>GBK</code>、<code>Unicode</code>、<code>UTF-8</code>等名词，这是理解乱码问题的基本，在继续往下看之前，请先理解这些概念，大家可参考此篇文章，个人觉得值得一看。</p>
+<blockquote>
+<p><a href="http://www.cnblogs.com/skynet/archive/2011/05/03/2035105.html" target="_blank" rel="external">http://www.cnblogs.com/skynet/archive/2011/05/03/2035105.html</a></p>
+</blockquote>
+<p>在这篇文章中，将这些名称解释的很清楚。但并没有对java编译和前后端编码、解码的场景进行分析，我这里就对这些场景进行补充。</p>
+<a id="more"></a>
+<h3 id="javac编译"><a href="#javac编译" class="headerlink" title="javac编译"></a>javac编译</h3><p>javac 编译源文件时，如果不指定<code>encoding</code>参数，则使用操作系统的默认编码来读取源文件并编译，也就是GBK。(中文操作系统默认编码为GBK，命令行chcp可查看)：</p>
+<h4 id="GBK-编码的源文件"><a href="#GBK-编码的源文件" class="headerlink" title="GBK 编码的源文件"></a>GBK 编码的源文件</h4><p>由于javac默认根据操作系统编码(GBK)读取源文件，因此在编译GBK编码的源文件时，不需要加上任何的参数，直接编译即可，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">javac Demo.java</div></pre></td></tr></table></figure>
+<h4 id="非GBK编码的源文件"><a href="#非GBK编码的源文件" class="headerlink" title="非GBK编码的源文件"></a>非GBK编码的源文件</h4><p>编译非GBK编码的源文件时，如果在编译时加上<code>encoding</code>参数指定对应编码，则不会有任何问题，如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">javac -encoding UTF-8 Demo.java</div></pre></td></tr></table></figure></p>
+<p>执行的结果也不会乱码。如果仍然按照默认编码来编译源文件，即：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">javac Demo.java</div></pre></td></tr></table></figure></p>
+<p>会有两种结果：</p>
+<ul>
+<li><p>编译成功</p>
+<p>  示例：</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo</span></span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String [] args)</span></span>&#123;</div><div class="line">		System.out.println(<span class="string">"数字"</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>  结果：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">D:\&gt;javac Demo.java</div><div class="line"></div><div class="line">D:\&gt;java Demo</div><div class="line">鏁板瓧</div></pre></td></tr></table></figure>
+<p>  可以看到，即使编译成功，执行结果一样乱码。</p>
+</li>
+<li><p>编译不成功</p>
+<p>  示例：</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo</span></span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String [] args)</span></span>&#123;</div><div class="line">		System.out.println(<span class="string">"数值"</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>  结果：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">D:\&gt;javac Demo.java</div><div class="line">Demo.java:3: 错误: 编码GBK的不可映射字符</div><div class="line">                System.out.println(&quot;鏁板??&quot;);</div><div class="line">                                      ^</div><div class="line">Demo.java:3: 错误: 编码GBK的不可映射字符</div><div class="line">                System.out.println(&quot;鏁板??&quot;);</div><div class="line">                                       ^</div><div class="line">2 个错误</div></pre></td></tr></table></figure>
+<p>  可以看到，直接编译失败。</p>
+</li>
+</ul>
+<p>发现什么？差别只是字符<code>字</code>与<code>值</code>区别！！！这两个UTF-8编码的源文件，javac都是用GBK编译。那么在读取文件时，会分别将<code>字</code>与<code>值</code>读出来，读到的是什么样子呢，如下：<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">//数字</div><div class="line">public class Demo&#123;</div><div class="line">	public static void main(String [] args)&#123;</div><div class="line">		System.out.println("鏁板瓧");</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//数值</div><div class="line">public class Demo&#123;</div><div class="line">	public static void main(String [] args)&#123;</div><div class="line">		System.out.println("鏁板€?);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>如上所示，细心的话可以发现，当字符是<code>数字</code>的时候，双引号仍然存在，整个源文件格式是正确的，所以可以被javac编译；而当字符是<code>数值</code>的时候，双引号都少了一个，整个源文件的格式都不正确了，所以才会导致编译失败。</p>
+<p>因此，用GBK来编译UTF-8等非GBK编码的源文件时，编译成功与否是看运气的。如果乱码后，仍然符合java规范，则可以编译通过；否则，编译不会通过。</p>
+<h4 id="GBK-、非GBK编码的多个源文件"><a href="#GBK-、非GBK编码的多个源文件" class="headerlink" title="GBK 、非GBK编码的多个源文件"></a>GBK 、非GBK编码的多个源文件</h4><p>当编译的一个源文件中使用了另外一种编码格式的类时，也就是多个不同编码的源文件会被同时编译。同样默认使用GBK来编译这些源文件，通过encoding参数也可指定编码格式，编译是否成功，结果是否乱码，请参考上面两点。因此，可以推测：当同时编译不同编码的多个源文件时，即使编译成功，也必然会乱码(编译时只能指定一种编码，而源文件有多种编码)。值得注意的是，我们平常使用各种IDE(Eclipse等)来编译项目时，即使源文件编码五花八门，也不会乱码，为什么？是IDE智能处理了这些编译过程，根据文件的编码选择对应的编码来编译。</p>
+<h3 id="web"><a href="#web" class="headerlink" title="web"></a>web</h3><p>web项目是乱码的集中地：请求-应答模式。由于客户端和服务器的编码环境不一致，所以导致很容易出现乱码问题。通过浏览器请求时，会有以下的几个场景涉及到中文编码的问题：</p>
+<h4 id="URL-中包含中文"><a href="#URL-中包含中文" class="headerlink" title="URL 中包含中文"></a>URL 中包含中文</h4><p>url 中包含中文的有两部分：Path和Query String，如下所示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://127.0.0.1:8080/demo/我?name=我</div></pre></td></tr></table></figure></p>
+<p>上面这个url，在<code>Chrome</code>、<code>Firefox</code>浏览器中会自动转成如下的形式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://127.0.0.1:8080/demo/%E6%88%91?name=%E6%88%91</div></pre></td></tr></table></figure></p>
+<p>在<code>IE</code>浏览器中会自动转成如下的形式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://127.0.0.1:8080/demo/%E6%88%91?name=%CE%D2</div></pre></td></tr></table></figure></p>
+<p>可以看到不同的浏览器处理的方式不同：<code>Chrome</code>、<code>Firefox</code>、<code>IE</code>将Path中的<code>我</code>转成了<code>%E6%88%91</code>，<code>我</code>的UTF-8编码正是<code>E68891</code>。而对于Query String部分，<code>Chrome</code>、<code>Firefox</code>同样是转成了<code>%E6%88%91</code>，<code>IE</code>却转成了<code>%CE%D2</code>，这是<code>我</code>的GBK编码。</p>
+<p>由此可得知：URL中Path部分的中文，浏览器均会转成UTF-8，而对于Query String 部分，<code>Chrome</code>、<code>Firefox</code>浏览器会转成UTF-8编码，<code>IE</code>会转成GBK编码(操作系统默认编码)。</p>
+<p>那服务器如何解码？以Tomcat为例，如果不加任何的控制，Tomcat会默认转成<code>ISO-8859-1</code>，而浏览器传输过来的是Path部分是UTF-8，而Query String部分就不一定了，因浏览器而定。如果不加处理，毫无疑问会乱码，如下所示：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">request.getParameter(<span class="string">"name"</span>);</div></pre></td></tr></table></figure></p>
+<p>如果不修改任何配置，代码层面上可通过如下的形式还原：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">new</span> String(request.getParameter(<span class="string">"name"</span>).getBytes(<span class="string">"ISO-8859-1"</span>),<span class="string">"UTF-8"</span>)</div><div class="line"><span class="comment">// new String(request.getParameter("name").getBytes("ISO-8859-1"),"GBK")</span></div></pre></td></tr></table></figure></p>
+<p>也可以通过修改Tomcat的配置来避免修改代码，打开server.xml文件，设置<code>URIEncoding</code>，如下：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">Connector</span> <span class="attr">port</span>=<span class="string">"8080"</span> <span class="attr">protocol</span>=<span class="string">"HTTP/1.1"</span></span></div><div class="line">           <span class="attr">connectionTimeout</span>=<span class="string">"20000"</span></div><div class="line">           <span class="attr">redirectPort</span>=<span class="string">"8443"</span> <span class="attr">URIEncoding</span>=<span class="string">"UTF-8"</span> /&gt;</div><div class="line">           </div><div class="line">or</div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">Connector</span> <span class="attr">port</span>=<span class="string">"8080"</span> <span class="attr">protocol</span>=<span class="string">"HTTP/1.1"</span></span></div><div class="line">           <span class="attr">connectionTimeout</span>=<span class="string">"20000"</span></div><div class="line">           <span class="attr">redirectPort</span>=<span class="string">"8443"</span> <span class="attr">URIEncoding</span>=<span class="string">"GBK"</span> /&gt;</div></pre></td></tr></table></figure></p>
+<p>属性<code>URIEncoding</code>表明用何种方式来解码URL。通过上面的试验可得知，对于直接在浏览器中输入含中文的URL，不同的浏览器处理的方式有差异(还有很多其它的浏览器)，后台无法通过一个解码规则来应对。因此，在实际的开发中应该屏蔽掉直接输入含中文的URL来访问的场景。</p>
+<h4 id="表单提交"><a href="#表单提交" class="headerlink" title="表单提交"></a>表单提交</h4><p>在<code>Chrome</code>、<code>Firefox</code>、<code>IE</code>三种浏览器中，表单中的中文编码按照如下的规则来进行：</p>
+<ol>
+<li>如果form设置了accept-charset属性，则以此属性值为准；</li>
+<li>如果form未设置accept-charset属性，则以页面编码为准;</li>
+<li>如果form未设置，页面编码也未设置，则以操作系统编码为准。</li>
+</ol>
+<ul>
+<li><p>示例1：页面编码为UTF-8，form设置accept-charset=GBK</p>
+  <figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">	<span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></div><div class="line">	...</div><div class="line">  <span class="tag">&lt;<span class="name">form</span> <span class="attr">accept-charset</span>=<span class="string">"GBK"</span> <span class="attr">action</span>=<span class="string">"http://127.0.0.1:8080"</span> <span class="attr">method</span>=<span class="string">"GET"</span> &gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"name"</span> &gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">form</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>  生成的URL为：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://127.0.0.1:8080/?name=%CE%D2</div></pre></td></tr></table></figure>
+<blockquote>
+<p><code>CED2</code>为字符<code>我</code>的<code>GBK</code>编码。</p>
+</blockquote>
+</li>
+<li><p>示例2：页面编码为UTF-8，form未设置accept-charset</p>
+  <figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">	<span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></div><div class="line">	...</div><div class="line">  <span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">"http://127.0.0.1:8080"</span> <span class="attr">method</span>=<span class="string">"GET"</span> &gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"name"</span> &gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">form</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>  生成的URL为：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://127.0.0.1:8080/?name=%E6%88%91</div></pre></td></tr></table></figure>
+<blockquote>
+<p><code>E68891</code>为字符<code>我</code>的<code>UTF-8</code>编码。</p>
+</blockquote>
+</li>
+<li><p>示例3：页面无编码，form未设置</p>
+  <figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">	<span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></div><div class="line">	...</div><div class="line">  <span class="tag">&lt;<span class="name">form</span> <span class="attr">accept-charset</span>=<span class="string">"GBK"</span> <span class="attr">action</span>=<span class="string">"http://127.0.0.1:8080"</span> <span class="attr">method</span>=<span class="string">"GET"</span> &gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"name"</span> &gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">form</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>  生成的URL为：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://127.0.0.1:8080/?name=%CE%D2</div></pre></td></tr></table></figure>
+<blockquote>
+<p><code>CED2</code>为字符<code>我</code>的<code>GBK</code>编码。</p>
+</blockquote>
+</li>
+</ul>
+<p>不同的表单提交方式，不管是GET还是POST还是其它，前端编码的规则是一样的，也没有浏览器的差异(如果表单中的中文，不同的浏览器提交时编码还有差异，可以想象真是要搞死人了)，不过后端解码的规则不一样。</p>
+<h5 id="GET"><a href="#GET" class="headerlink" title="GET"></a>GET</h5><p>GET 方式提交的数据会追加到URL后面，服务器端解析与上面一样，通过URIEncoding属性可设置。</p>
+<h5 id="POST"><a href="#POST" class="headerlink" title="POST"></a>POST</h5><p>POST提交的数据并不是追加到URL之后，而是通过body发送，因此服务器无法通过设置URIEncoding来让Tomcat自动解码，需要手动设置(必须在第一次取值之前设置)，如下所示：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">request.setCharacterEncoding(<span class="string">"UTF-8"</span>);</div><div class="line">System.out.println(request.getParameter(<span class="string">"name"</span>));</div></pre></td></tr></table></figure></p>
+<p>当然，你大可以编写一个过滤器来干这样的事情，如下所示：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.io.IOException;</div><div class="line"><span class="keyword">import</span> javax.servlet.Filter;</div><div class="line"><span class="keyword">import</span> javax.servlet.FilterChain;</div><div class="line"><span class="keyword">import</span> javax.servlet.FilterConfig;</div><div class="line"><span class="keyword">import</span> javax.servlet.ServletException;</div><div class="line"><span class="keyword">import</span> javax.servlet.ServletRequest;</div><div class="line"><span class="keyword">import</span> javax.servlet.ServletResponse;</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CharacterEncodingFilter</span> <span class="keyword">implements</span> <span class="title">Filter</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">destroy</span><span class="params">()</span> </span>&#123;&#125;</div><div class="line"> </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doFilter</span><span class="params">(ServletRequest request, ServletResponse response,</span></span></div><div class="line">                         FilterChain chain)<span class="keyword">throws</span> IOException, ServletException &#123;</div><div class="line">        request.setCharacterEncoding(<span class="string">"UTF-8"</span>);</div><div class="line">        chain.doFilter(request, response);</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(FilterConfig filterConfig)</span> <span class="keyword">throws</span> ServletException </span>&#123;&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>web.xml<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">filter</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>characterEncoding<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>CharacterEncodingFilter<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">filter</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>characterEncoding<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>/*<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>只要是通过body发送的数据，服务器的解码都要按照上面的方式进行。(设置setCharacterEncoding)</p>
+<h4 id="网页链接含中文"><a href="#网页链接含中文" class="headerlink" title="网页链接含中文"></a>网页链接含中文</h4><p>同样是URL中含有中文，不过URL并不是直接在浏览器地址栏中输入，而是通过网页上的链接点击来访问，如下所示：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"http://127.0.0.1:8080/demo/我?name=我"</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>经过测试，在<code>Chrome</code>、<code>Firefox</code>、<code>IE</code>三种浏览器中，均按照如下规则来对中文编码：</p>
+<ol>
+<li>优先以页面设置的编码为准</li>
+<li>如果页面没有设置编码，则以操作系统编码为准(GBK)。</li>
+</ol>
+<p>处理方式与表单类似，只不过不能另外设置accept-charset。</p>
+<h4 id="Ajax-请求"><a href="#Ajax-请求" class="headerlink" title="Ajax 请求"></a>Ajax 请求</h4><p>通过Ajax发送的数据，浏览器均以UTF-8的形式编码发送，不管页面编码是什么，后端解码按照表单POST提交的方式进行即可。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>编码的问题因使用的场景、浏览器均会产生差异，而后端解码要根据相应的前端编码来进行，所以前后端编码统一很重要。而且可以看到，只要是浏览器强势使用的编码(URL中的Path,Ajax发送body)，都是UTF-8(IE 对 Query String编码除外)，因此，前后端最好都是用UTF-8才是最合适的。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechat.png" alt="DistChen WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.png" alt="DistChen Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/web/" rel="tag"># web</a>
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/01/18/jsonp/" rel="next" title="JSONP原理">
+                <i class="fa fa-chevron-left"></i> JSONP原理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/03/31/office-online-java-app/" rel="prev" title="Java 程序与 Office Web Apps 整合">
+                Java 程序与 Office Web Apps 整合 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="SOHUCS" ></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/avatar.png"
+               alt="DistChen" />
+          <p class="site-author-name" itemprop="name">DistChen</p>
+          <p class="site-description motion-element" itemprop="description">梦想还是要有的，万一实现了呢？</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">35</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/DistChen" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/ooqingkuangoo" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#javac编译"><span class="nav-number">1.</span> <span class="nav-text">javac编译</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#GBK-编码的源文件"><span class="nav-number">1.1.</span> <span class="nav-text">GBK 编码的源文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#非GBK编码的源文件"><span class="nav-number">1.2.</span> <span class="nav-text">非GBK编码的源文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#GBK-、非GBK编码的多个源文件"><span class="nav-number">1.3.</span> <span class="nav-text">GBK 、非GBK编码的多个源文件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#web"><span class="nav-number">2.</span> <span class="nav-text">web</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#URL-中包含中文"><span class="nav-number">2.1.</span> <span class="nav-text">URL 中包含中文</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#表单提交"><span class="nav-number">2.2.</span> <span class="nav-text">表单提交</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#GET"><span class="nav-number">2.2.1.</span> <span class="nav-text">GET</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#POST"><span class="nav-number">2.2.2.</span> <span class="nav-text">POST</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#网页链接含中文"><span class="nav-number">2.3.</span> <span class="nav-text">网页链接含中文</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Ajax-请求"><span class="nav-number">2.4.</span> <span class="nav-text">Ajax 请求</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">DistChen</span> ● 
+  <a href="http://www.miitbeian.gov.cn">鄂ICP备17010195号-2</a>
+</div>
+
+
+<div class="powered-by">
+  邮箱： <a class="theme-link" href="mailto:chenyp@chenyp.com">chenyp@chenyp.com</a> 
+</div>
+
+<div class="theme-info">
+  <a class="theme-link" title="365061362" target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=365061362&site=qq&menu=yes">QQ联系</a>
+</div>
+
+
+        
+
+<span class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-user"></i>访客人数:<span class="busuanzi-value" id="busuanzi_value_site_uv">0</span>人</span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i>访问次数:<span class="busuanzi-value" id="busuanzi_value_site_pv">0</span>次</span>
+  
+  
+</span>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+	
+		 <script type="text/javascript"> 
+		(function(){ 
+		var appid = 'cyt42c1yO'; 
+		var conf = 'c2e8cb34856682963b6040051360b87f'; 
+		var width = window.innerWidth || document.documentElement.clientWidth; 
+		if (width < 960) { 
+		window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); } })(); </script>
+		<script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+	
+
+  
+  
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

@@ -1,0 +1,832 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="web,office,js," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="项目地址：https://github.com/DistChen/DDoc.jsDemo  ：https://distchen.github.io/DDoc.js/
+前不久因为项目的一些需求，琢磨了下如何利用 JS 来生成 word 文档，并可以往文档中插入一些基本的元素：段落、标题、列表、表格、图片等，并给这些元素设置一些样式，如颜色、字体等。一番摸索后，发现可行，这里就把最基本的成果分享出来。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DDoc.js-JS生成word文档">
+<meta property="og:url" content="http://www.chenyp.com/2016/11/16/ddoc/index.html">
+<meta property="og:site_name" content="DistChen">
+<meta property="og:description" content="项目地址：https://github.com/DistChen/DDoc.jsDemo  ：https://distchen.github.io/DDoc.js/
+前不久因为项目的一些需求，琢磨了下如何利用 JS 来生成 word 文档，并可以往文档中插入一些基本的元素：段落、标题、列表、表格、图片等，并给这些元素设置一些样式，如颜色、字体等。一番摸索后，发现可行，这里就把最基本的成果分享出来。">
+<meta property="og:image" content="http://www.chenyp.com/img/demo.png">
+<meta property="og:updated_time" content="2016-11-16T06:29:23.500Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DDoc.js-JS生成word文档">
+<meta name="twitter:description" content="项目地址：https://github.com/DistChen/DDoc.jsDemo  ：https://distchen.github.io/DDoc.js/
+前不久因为项目的一些需求，琢磨了下如何利用 JS 来生成 word 文档，并可以往文档中插入一些基本的元素：段落、标题、列表、表格、图片等，并给这些元素设置一些样式，如颜色、字体等。一番摸索后，发现可行，这里就把最基本的成果分享出来。">
+<meta name="twitter:image" content="http://www.chenyp.com/img/demo.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'DistChen'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.chenyp.com/2016/11/16/ddoc/"/>
+
+
+
+
+
+  <title> DDoc.js-JS生成word文档 | DistChen </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?540e274718a25b28e12d4a5c890221bd";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta custom-logo">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">DistChen</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://www.chenyp.com/2016/11/16/ddoc/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="DistChen">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="DistChen">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="DistChen" src="avatar.jpg">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                DDoc.js-JS生成word文档
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-16T11:04:55+08:00">
+              2016-11-16
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2016-11-16T14:29:23+08:00">
+              2016-11-16
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/office/" itemprop="url" rel="index">
+                    <span itemprop="name">office</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+                <!--noindex-->
+                <span class="post-comments-count">
+                <span class="post-meta-divider">&nbsp; | &nbsp;</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                
+                    <a href="/2016/11/16/ddoc/#SOHUCS" itemprop="discussionUrl">
+                      <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2016/11/16/ddoc/" itemprop="commentsCount"></span>
+                    </a>
+                  &nbsp;条
+                
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-eye"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+              </span>
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>项目地址：<a href="https://github.com/DistChen/DDoc.js" target="_blank" rel="external">https://github.com/DistChen/DDoc.js</a><br>Demo  ：<a href="https://distchen.github.io/DDoc.js/" target="_blank" rel="external">https://distchen.github.io/DDoc.js/</a></p>
+<p>前不久因为项目的一些需求，琢磨了下如何利用 JS 来生成 word 文档，并可以往文档中插入一些基本的元素：段落、标题、列表、表格、图片等，并给这些元素设置一些样式，如颜色、字体等。一番摸索后，发现可行，这里就把最基本的成果分享出来。</p>
+<h2 id="可添加的元素"><a href="#可添加的元素" class="headerlink" title="可添加的元素"></a>可添加的元素</h2><blockquote>
+<ul>
+<li>段落</li>
+<li>超链接</li>
+<li>标题</li>
+<li>表格</li>
+<li>列表</li>
+<li>图片</li>
+</ul>
+</blockquote>
+<a id="more"></a>
+<h2 id="可设置的属性"><a href="#可设置的属性" class="headerlink" title="可设置的属性"></a>可设置的属性</h2><blockquote>
+<ul>
+<li>font：字体，比如：”Microsoft YaHei UI”</li>
+<li>fontSize：字体大小，比如：”44”</li>
+<li>bold:true：是否加粗，true 或 false，默认不加粗</li>
+<li>color：颜色，比如：”FF0000”</li>
+<li>highlightColor：高亮颜色，比如：”blue”</li>
+<li>italic：是否斜体，true 或 false，默认非斜体</li>
+<li>underline: 下划线类型，比如：doc.UnderlineType.Wave(波浪线)，默认无下划线</li>
+<li>underlineColor：下划线颜色，比如：”FF0000”</li>
+<li>strike：文本删除线，true 或 false</li>
+<li>shadow：文本底纹颜色，比如：”FFFFFF”，默认无</li>
+<li>textAlign: 文本对齐方式，比如：doc.AlignType.Center，默认两端对齐</li>
+<li>lineHeight：行间距，比如：3</li>
+</ul>
+</blockquote>
+<h2 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h2><h3 id="引用脚本文件"><a href="#引用脚本文件" class="headerlink" title="引用脚本文件"></a>引用脚本文件</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">src</span>=<span class="string">"jquery-3.1.0.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">src</span>=<span class="string">"jszip.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">src</span>=<span class="string">"DDoc.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<h3 id="构造-DDoc-实例"><a href="#构造-DDoc-实例" class="headerlink" title="构造 DDoc 实例"></a>构造 DDoc 实例</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> doc = <span class="keyword">new</span> DDoc();</div></pre></td></tr></table></figure>
+<h3 id="添加段落"><a href="#添加段落" class="headerlink" title="添加段落"></a>添加段落</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">doc.addParagraph(<span class="string">"添加一个段落"</span>);</div></pre></td></tr></table></figure>
+<h3 id="添加段落并设置样式"><a href="#添加段落并设置样式" class="headerlink" title="添加段落并设置样式"></a>添加段落并设置样式</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">doc.addParagraph(<span class="string">"添加一个段落，设置字体和大小"</span>,&#123;</div><div class="line">    <span class="attr">font</span>:<span class="string">"Microsoft YaHei UI"</span>,</div><div class="line">    <span class="attr">italic</span>:<span class="literal">true</span>,</div><div class="line">    <span class="attr">underline</span>:doc.UnderlineType.Wave,</div><div class="line">    <span class="attr">underlineColor</span>:<span class="string">"FF0000"</span>,</div><div class="line">    <span class="attr">strike</span>:<span class="literal">true</span>,</div><div class="line">    <span class="attr">shadow</span>:<span class="string">"FFFFFF"</span>,</div><div class="line">    <span class="attr">textAlign</span>:doc.AlignType.Center,</div><div class="line">    <span class="attr">lineHeight</span>:<span class="number">3</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="添加超链接"><a href="#添加超链接" class="headerlink" title="添加超链接"></a>添加超链接</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">doc.addHyperlink(<span class="string">"Github地址"</span>,<span class="string">"https://github.com/DistChen/DDoc.js"</span>);</div></pre></td></tr></table></figure>
+<h3 id="添加超链接并设置样式"><a href="#添加超链接并设置样式" class="headerlink" title="添加超链接并设置样式"></a>添加超链接并设置样式</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">doc.addHyperlink(<span class="string">"Github地址"</span>,<span class="string">"https://github.com/DistChen/DDoc.js"</span>,&#123;</div><div class="line">    <span class="attr">fontSize</span>:<span class="string">"30"</span>,</div><div class="line">    <span class="attr">bold</span>:<span class="literal">true</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="添加标题"><a href="#添加标题" class="headerlink" title="添加标题"></a>添加标题</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">doc.addHeader(<span class="string">"标题1"</span>, doc.HeaderType.H1);<span class="comment">//H2....H7</span></div></pre></td></tr></table></figure>
+<h3 id="添加标题并设置样式"><a href="#添加标题并设置样式" class="headerlink" title="添加标题并设置样式"></a>添加标题并设置样式</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">doc.addHeader(<span class="string">"标题2"</span>, doc.HeaderType.H2,&#123;</div><div class="line">    <span class="attr">font</span>:<span class="string">"Microsoft YaHei UI"</span>,</div><div class="line">    <span class="attr">underline</span>:doc.UnderlineType.Double,</div><div class="line">    <span class="attr">color</span>:<span class="string">"67ff56"</span>,</div><div class="line">    <span class="attr">underlineColor</span>:<span class="string">"FF0000"</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="添加4-5的空表格"><a href="#添加4-5的空表格" class="headerlink" title="添加4*5的空表格"></a>添加4*5的空表格</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">doc.addEmptyTable(<span class="number">4</span>, <span class="number">5</span>);</div></pre></td></tr></table></figure>
+<h3 id="添加3-3表格-有数据-并设置颜色为红色"><a href="#添加3-3表格-有数据-并设置颜色为红色" class="headerlink" title="添加3*3表格(有数据)并设置颜色为红色"></a>添加3*3表格(有数据)并设置颜色为红色</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">doc.addTable([</div><div class="line">    [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],</div><div class="line">    [<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>],</div><div class="line">    [<span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]</div><div class="line">],&#123;<span class="attr">color</span>:<span class="string">"FF0000"</span>&#125;);</div></pre></td></tr></table></figure>
+<h3 id="添加表格-行列分别有合并"><a href="#添加表格-行列分别有合并" class="headerlink" title="添加表格(行列分别有合并)"></a>添加表格(行列分别有合并)</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//doc.Merge.CC 代表此单元格跨列合并</span></div><div class="line"><span class="comment">//doc.Merge.RC 代表此单元格跨行合并</span></div><div class="line">doc.addTable([</div><div class="line">    [<span class="number">1</span>, <span class="number">2</span>, <span class="number">4</span>,<span class="number">4</span>,<span class="number">5</span>],</div><div class="line">    [doc.Merge.CC,<span class="number">3</span>, doc.Merge.RC,<span class="number">5</span>,<span class="number">8</span>],</div><div class="line">    [<span class="number">7</span>, <span class="number">8</span>, <span class="number">4</span>,doc.Merge.CC,<span class="number">9</span>],</div><div class="line">    [<span class="number">1</span>, <span class="number">2</span>, doc.Merge.RC,doc.Merge.CC,<span class="number">5</span>]</div><div class="line">]);</div></pre></td></tr></table></figure>
+<h3 id="添加图片"><a href="#添加图片" class="headerlink" title="添加图片"></a>添加图片</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> _temp=<span class="string">"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEQAAAAmCAIAAADyTaq0AAAAAXNSR0IArs4c6QAAAAlwSFlzAAAOwwAADsMBx2+oZAAAAWFJREFUWEftVgkOhCAMVB+0L9n/f4flUGQVcIptPQIhakwpnZm2MA6f7/C8YdaQw+foHtOtgRgzZGcMOoLyHzpg7FZts0p1Io+zM0pgWuW3yZOdBX9yyqRSHAkTgsPFUwIzS+9f/3Ba1Sms2+SYt8KVsbXoA6w/ZxBLhynlyeZ/CDj8REYOCQzGtRQAyWqDRMRvgytzbu+QcsJDBUx6GmSrnAmkBYM0kdbdVASJwU0zlkq0zemxX0g8NygUOtqWNKvIE/sM2Jqsma4gsRxVaobCMN12TQAMDFJWZ45IdO1B98DA0OnKryiRwuTfg4nFwOT0KjcejHa9SoFN0qy5BUvFRvbbXDN3VBMEs6/cQBu1zZ20P9AKBENW/JIFymAE7zOWPmUwsoJtwAifasUa4wH5NmXQixEPe5Je3qaMJFe6vrsyunzju3VlcK54LWPfLZxXXRlevvm8dWX4uOT19CplfqqGCgdY+hAkAAAAAElFTkSuQmCC"</span>;</div><div class="line">doc.addImage(_temp,<span class="number">100</span>,<span class="number">50</span>,&#123;</div><div class="line">    <span class="attr">textAlign</span>:doc.AlignType.Center</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="添加列表"><a href="#添加列表" class="headerlink" title="添加列表"></a>添加列表</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">doc.addList([<span class="string">'第一章'</span>, <span class="string">'第二章'</span>, <span class="string">'第三章'</span>],&#123;</div><div class="line">    <span class="attr">color</span>:<span class="string">"FF0000"</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="添加空行"><a href="#添加空行" class="headerlink" title="添加空行"></a>添加空行</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">doc.newLine();</div></pre></td></tr></table></figure>
+<h3 id="生成word文档"><a href="#生成word文档" class="headerlink" title="生成word文档"></a>生成word文档</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">doc.generate();</div></pre></td></tr></table></figure>
+<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">generate</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> doc = <span class="keyword">new</span> DDoc();</div><div class="line">    doc.addParagraph(<span class="string">"添加一个段落"</span>);</div><div class="line">    doc.addParagraph(<span class="string">"添加一个段落，设置字体和大小"</span>,&#123;</div><div class="line">        <span class="attr">font</span>:<span class="string">"Microsoft YaHei UI"</span>,</div><div class="line">        <span class="attr">italic</span>:<span class="literal">true</span>,</div><div class="line">        <span class="attr">underline</span>:doc.UnderlineType.Wave,</div><div class="line">        <span class="attr">underlineColor</span>:<span class="string">"FF0000"</span>,</div><div class="line">        <span class="attr">strike</span>:<span class="literal">true</span>,</div><div class="line">        <span class="attr">shadow</span>:<span class="string">"FFFFFF"</span>,</div><div class="line">        <span class="attr">textAlign</span>:doc.AlignType.Center,</div><div class="line">        <span class="attr">lineHeight</span>:<span class="number">3</span></div><div class="line">    &#125;);</div><div class="line">    doc.addParagraph(<span class="string">"再添加一个段落，设置一些样式"</span>,&#123;</div><div class="line">        <span class="attr">font</span>:<span class="string">"Microsoft YaHei UI"</span>,</div><div class="line">        <span class="attr">fontSize</span>:<span class="string">"44"</span>,</div><div class="line">        <span class="attr">bold</span>:<span class="literal">true</span>,</div><div class="line">        <span class="attr">color</span>:<span class="string">"FF0000"</span>,</div><div class="line">        <span class="attr">highlightColor</span>:<span class="string">"blue"</span></div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    doc.addHeader(<span class="string">"标题1"</span>, doc.HeaderType.H1);</div><div class="line">    doc.addHeader(<span class="string">"标题2"</span>, doc.HeaderType.H2,&#123;</div><div class="line">        <span class="attr">font</span>:<span class="string">"Microsoft YaHei UI"</span>,</div><div class="line">        <span class="attr">underline</span>:doc.UnderlineType.Double,</div><div class="line">        <span class="attr">color</span>:<span class="string">"67ff56"</span>,</div><div class="line">        <span class="attr">underlineColor</span>:<span class="string">"FF0000"</span></div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    doc.addList([<span class="string">'第1章'</span>, <span class="string">'第2章'</span>, <span class="string">'第3章'</span>]);</div><div class="line">    doc.addList([<span class="string">'第一章'</span>, <span class="string">'第二章'</span>, <span class="string">'第三章'</span>],&#123;</div><div class="line">        <span class="attr">color</span>:<span class="string">"FF0000"</span></div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    doc.addEmptyTable(<span class="number">4</span>, <span class="number">5</span>);</div><div class="line">    doc.newLine();</div><div class="line">    doc.addTable([</div><div class="line">        [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],</div><div class="line">        [<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>],</div><div class="line">        [<span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>]</div><div class="line">    ],&#123;<span class="attr">color</span>:<span class="string">"FF0000"</span>&#125;);</div><div class="line"></div><div class="line">    doc.newLine();</div><div class="line">    doc.addTable([</div><div class="line">        [<span class="number">1</span>, <span class="number">2</span>, <span class="number">4</span>,<span class="number">4</span>,<span class="number">5</span>],</div><div class="line">        [doc.Merge.CC,<span class="number">3</span>, doc.Merge.RC,<span class="number">5</span>,<span class="number">8</span>],</div><div class="line">        [<span class="number">7</span>, <span class="number">8</span>, <span class="number">4</span>,doc.Merge.CC,<span class="number">9</span>],</div><div class="line">        [<span class="number">1</span>, <span class="number">2</span>, doc.Merge.RC,doc.Merge.CC,<span class="number">5</span>]</div><div class="line">    ]);</div><div class="line"></div><div class="line">    <span class="keyword">var</span> _temp=<span class="string">"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEQAAAAmCAIAAADyTaq0AAAAAXNSR0IArs4c6QAAAAlwSFlzAAAOwwAADsMBx2+oZAAAAWFJREFUWEftVgkOhCAMVB+0L9n/f4flUGQVcIptPQIhakwpnZm2MA6f7/C8YdaQw+foHtOtgRgzZGcMOoLyHzpg7FZts0p1Io+zM0pgWuW3yZOdBX9yyqRSHAkTgsPFUwIzS+9f/3Ba1Sms2+SYt8KVsbXoA6w/ZxBLhynlyeZ/CDj8REYOCQzGtRQAyWqDRMRvgytzbu+QcsJDBUx6GmSrnAmkBYM0kdbdVASJwU0zlkq0zemxX0g8NygUOtqWNKvIE/sM2Jqsma4gsRxVaobCMN12TQAMDFJWZ45IdO1B98DA0OnKryiRwuTfg4nFwOT0KjcejHa9SoFN0qy5BUvFRvbbXDN3VBMEs6/cQBu1zZ20P9AKBENW/JIFymAE7zOWPmUwsoJtwAifasUa4wH5NmXQixEPe5Je3qaMJFe6vrsyunzju3VlcK54LWPfLZxXXRlevvm8dWX4uOT19CplfqqGCgdY+hAkAAAAAElFTkSuQmCC"</span>;</div><div class="line">    doc.addImage(_temp,<span class="number">100</span>,<span class="number">50</span>,&#123;</div><div class="line">        <span class="attr">textAlign</span>:doc.AlignType.Center</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">	doc.addHyperlink(<span class="string">"Github地址"</span>,<span class="string">"https://github.com/DistChen/DDoc.js"</span>,&#123;</div><div class="line">        <span class="attr">fontSize</span>:<span class="string">"30"</span>,</div><div class="line">        <span class="attr">bold</span>:<span class="literal">true</span></div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    doc.generate();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;a href=&quot;javascript:generate()&quot;&gt;生成文档&lt;/a&gt;</div></pre></td></tr></table></figure>
+<h2 id="示例：生成的word文档及内容"><a href="#示例：生成的word文档及内容" class="headerlink" title="示例：生成的word文档及内容"></a>示例：生成的word文档及内容</h2><p><img src="/img/demo.png" alt="image"></p>
+<p>更多细节请自行查看JS文件，我这里只是分享思路，所以写的很简单。稍加改造就可以加上更多的功能。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechat.png" alt="DistChen WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.png" alt="DistChen Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/web/" rel="tag"># web</a>
+          
+            <a href="/tags/office/" rel="tag"># office</a>
+          
+            <a href="/tags/js/" rel="tag"># js</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/11/15/springwebsocket/" rel="next" title="跨平台的SpringWebsocket使用">
+                <i class="fa fa-chevron-left"></i> 跨平台的SpringWebsocket使用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/11/22/java8-FunctionalInterface/" rel="prev" title="Java8-函数式接口">
+                Java8-函数式接口 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="SOHUCS" ></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/avatar.png"
+               alt="DistChen" />
+          <p class="site-author-name" itemprop="name">DistChen</p>
+          <p class="site-description motion-element" itemprop="description">梦想还是要有的，万一实现了呢？</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">35</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/DistChen" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/ooqingkuangoo" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#可添加的元素"><span class="nav-number">1.</span> <span class="nav-text">可添加的元素</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可设置的属性"><span class="nav-number">2.</span> <span class="nav-text">可设置的属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用方式"><span class="nav-number">3.</span> <span class="nav-text">使用方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#引用脚本文件"><span class="nav-number">3.1.</span> <span class="nav-text">引用脚本文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构造-DDoc-实例"><span class="nav-number">3.2.</span> <span class="nav-text">构造 DDoc 实例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加段落"><span class="nav-number">3.3.</span> <span class="nav-text">添加段落</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加段落并设置样式"><span class="nav-number">3.4.</span> <span class="nav-text">添加段落并设置样式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加超链接"><span class="nav-number">3.5.</span> <span class="nav-text">添加超链接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加超链接并设置样式"><span class="nav-number">3.6.</span> <span class="nav-text">添加超链接并设置样式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加标题"><span class="nav-number">3.7.</span> <span class="nav-text">添加标题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加标题并设置样式"><span class="nav-number">3.8.</span> <span class="nav-text">添加标题并设置样式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加4-5的空表格"><span class="nav-number">3.9.</span> <span class="nav-text">添加4*5的空表格</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加3-3表格-有数据-并设置颜色为红色"><span class="nav-number">3.10.</span> <span class="nav-text">添加3*3表格(有数据)并设置颜色为红色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加表格-行列分别有合并"><span class="nav-number">3.11.</span> <span class="nav-text">添加表格(行列分别有合并)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加图片"><span class="nav-number">3.12.</span> <span class="nav-text">添加图片</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加列表"><span class="nav-number">3.13.</span> <span class="nav-text">添加列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加空行"><span class="nav-number">3.14.</span> <span class="nav-text">添加空行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#生成word文档"><span class="nav-number">3.15.</span> <span class="nav-text">生成word文档</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例代码"><span class="nav-number">4.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例：生成的word文档及内容"><span class="nav-number">5.</span> <span class="nav-text">示例：生成的word文档及内容</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">DistChen</span> ● 
+  <a href="http://www.miitbeian.gov.cn">鄂ICP备17010195号-2</a>
+</div>
+
+
+<div class="powered-by">
+  邮箱： <a class="theme-link" href="mailto:chenyp@chenyp.com">chenyp@chenyp.com</a> 
+</div>
+
+<div class="theme-info">
+  <a class="theme-link" title="365061362" target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=365061362&site=qq&menu=yes">QQ联系</a>
+</div>
+
+
+        
+
+<span class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-user"></i>访客人数:<span class="busuanzi-value" id="busuanzi_value_site_uv">0</span>人</span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i>访问次数:<span class="busuanzi-value" id="busuanzi_value_site_pv">0</span>次</span>
+  
+  
+</span>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+	
+		 <script type="text/javascript"> 
+		(function(){ 
+		var appid = 'cyt42c1yO'; 
+		var conf = 'c2e8cb34856682963b6040051360b87f'; 
+		var width = window.innerWidth || document.documentElement.clientWidth; 
+		if (width < 960) { 
+		window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); } })(); </script>
+		<script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+	
+
+  
+  
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

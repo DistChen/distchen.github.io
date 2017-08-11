@@ -1,0 +1,824 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="web,office," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="关于部署的细节，可以参考我的另一篇文章《在线浏览 Office 文档之 Office Web Apps》。
+关于 Wopi 协议，可以参考如下的链接:
+
+[MS-WOPI]:Web Application Open Platform Interface Protocol
+
+https://msdn.microsoft.com/en-us/library/hh622722(v=office.12).">
+<meta property="og:type" content="article">
+<meta property="og:title" content="应用程序与 Office Web Apps 整合">
+<meta property="og:url" content="http://www.chenyp.com/2016/03/17/office-online-app/index.html">
+<meta property="og:site_name" content="DistChen">
+<meta property="og:description" content="关于部署的细节，可以参考我的另一篇文章《在线浏览 Office 文档之 Office Web Apps》。
+关于 Wopi 协议，可以参考如下的链接:
+
+[MS-WOPI]:Web Application Open Platform Interface Protocol
+
+https://msdn.microsoft.com/en-us/library/hh622722(v=office.12).">
+<meta property="og:image" content="http://imglf2.ph.126.net/4dvF3D_9H94K4TcZ4aWtfA==/4869517097194648619.png">
+<meta property="og:image" content="http://imglf0.ph.126.net/lBcsIPYxKzv-UDrzq2qa0A==/6598260537809773239.png">
+<meta property="og:image" content="http://imglf0.ph.126.net/fLuzVLdmem7JyUdf-dQWlQ==/4884153795983838732.png">
+<meta property="og:image" content="http://imglf2.ph.126.net/KFe50-UolWoBtddKkbRRfg==/1995939059955698843.png">
+<meta property="og:image" content="http://imglf0.ph.126.net/bV2tn4QDWudtkMd6eRuFLg==/6598103307647001882.png">
+<meta property="og:image" content="http://imglf2.ph.126.net/YHjbRv0B5-fyBsU5neTPOA==/6598102208135370941.png">
+<meta property="og:image" content="http://imglf1.ph.126.net/vfVxaPjtKlXi5Zpn-6hdsw==/4859102523056544037.png">
+<meta property="og:updated_time" content="2017-03-31T10:13:26.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="应用程序与 Office Web Apps 整合">
+<meta name="twitter:description" content="关于部署的细节，可以参考我的另一篇文章《在线浏览 Office 文档之 Office Web Apps》。
+关于 Wopi 协议，可以参考如下的链接:
+
+[MS-WOPI]:Web Application Open Platform Interface Protocol
+
+https://msdn.microsoft.com/en-us/library/hh622722(v=office.12).">
+<meta name="twitter:image" content="http://imglf2.ph.126.net/4dvF3D_9H94K4TcZ4aWtfA==/4869517097194648619.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'DistChen'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.chenyp.com/2016/03/17/office-online-app/"/>
+
+
+
+
+
+  <title> 应用程序与 Office Web Apps 整合 | DistChen </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?540e274718a25b28e12d4a5c890221bd";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta custom-logo">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">DistChen</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://www.chenyp.com/2016/03/17/office-online-app/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="DistChen">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="DistChen">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="DistChen" src="avatar.jpg">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                应用程序与 Office Web Apps 整合
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-03-17T19:34:12+08:00">
+              2016-03-17
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2017-03-31T18:13:26+08:00">
+              2017-03-31
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/office/" itemprop="url" rel="index">
+                    <span itemprop="name">office</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+                <!--noindex-->
+                <span class="post-comments-count">
+                <span class="post-meta-divider">&nbsp; | &nbsp;</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                
+                    <a href="/2016/03/17/office-online-app/#SOHUCS" itemprop="discussionUrl">
+                      <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2016/03/17/office-online-app/" itemprop="commentsCount"></span>
+                    </a>
+                  &nbsp;条
+                
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-eye"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+              </span>
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>关于部署的细节，可以参考我的另一篇文章<a href="http://www.chenyp.com/2016/03/15/office-online/">《在线浏览 Office 文档之 Office Web Apps》</a>。</p>
+<p>关于 Wopi 协议，可以参考如下的链接:</p>
+<blockquote>
+<p>[MS-WOPI]:Web Application Open Platform Interface Protocol</p>
+<blockquote>
+<p><a href="https://msdn.microsoft.com/en-us/library/hh622722(v=office.12).aspx" target="_blank" rel="external">https://msdn.microsoft.com/en-us/library/hh622722(v=office.12).aspx</a></p>
+</blockquote>
+<p>IntroducingWOPI</p>
+<blockquote>
+<p><a href="http://blogs.msdn.com/b/officedevdocs/archive/2013/03/21/introducing-wopi.aspx" target="_blank" rel="external">http://blogs.msdn.com/b/officedevdocs/archive/2013/03/21/introducing-wopi.aspx</a></p>
+</blockquote>
+<p>Buildingan Office Web Apps (OWA) WOPI Host:</p>
+<blockquote>
+<p><a href="https://code.msdn.microsoft.com/office/Building-an-Office-Web-f98650d6" target="_blank" rel="external">https://code.msdn.microsoft.com/office/Building-an-Office-Web-f98650d6</a></p>
+</blockquote>
+</blockquote>
+<a id="more"></a>
+<p>CSDN 上面也有类似的文章，基本上也就是根据上面的文章翻译过来并加上了自己理解的： <a href="http://www.cnblogs.com/poissonnotes/p/3267190.html" target="_blank" rel="external">如何整合Office Web Apps至自己开发的系统（一）</a> 。如果你认真读了这些文章，那么你现在应该知道为了将自己的程序(Wopi Host)与Office Web Apps (Wopi Client)整合起来，Wopi Host至少得提供两个服务：</p>
+<p>1、CheckFileInfo服务，此服务会返回文件的基本信息</p>
+<blockquote>
+<p>详情可参考[MS-WOPI] <a href="http://msdn.microsoft.com/en-us/library/hh643136%28v=office.12%29.aspx" target="_blank" rel="external">section 3.3.5.1.1</a> 章节</p>
+</blockquote>
+<p>2、GetFile服务，此服务根据上一个服务返回的基本信息返回对应文件的数据流</p>
+<blockquote>
+<p>详情可参考[MS-WOPI] <a href="http://msdn.microsoft.com/en-us/library/hh657944%28v=office.12%29.aspx" target="_blank" rel="external">section 3.3.5.3.1</a> 章节。</p>
+</blockquote>
+<p>由于官方文档及上面提供的链接对此说明的很详细，这里就不多说了，我也建议在学习新东西的时候，多看看官方文档。同时，微软员工也给我们提供了一个Wopi Host 的 demo，这里就直接使用他们提供的 demo来学习了。到此处下载该demo：<a href="https://code.msdn.microsoft.com/office/Building-an-Office-Web-f98650d6" target="_blank" rel="external">https://code.msdn.microsoft.com/office/Building-an-Office-Web-f98650d6</a>。在demo的 Wopihost 项目中找到 Filecontroller.cs文件，定位到如下代码:<br><figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></div><div class="line"><span class="comment"><span class="doctag">///</span> Returns the metadata about an office document</span></div><div class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></div><div class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="name"&gt;</span>filename<span class="doctag">&lt;/param&gt;</span></span></div><div class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="access_token"&gt;</span>access token generated for this server<span class="doctag">&lt;/param&gt;</span></span></div><div class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;returns&gt;</span><span class="doctag">&lt;/returns&gt;</span></span></div><div class="line">[Route(<span class="string">"files/&#123;name&#125;/"</span>)]</div><div class="line"><span class="function"><span class="keyword">public</span> CheckFileInfo <span class="title">GetFileInfo</span>(<span class="params"><span class="keyword">string</span> name, <span class="keyword">string</span> access_token</span>)</span></div><div class="line">&#123;</div><div class="line">    Validate(name, access_token);</div><div class="line">    <span class="keyword">var</span> fileInfo = _fileHelper.GetFileInfo(name);</div><div class="line">    <span class="keyword">bool</span> updateEnabled = <span class="literal">false</span>;</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">bool</span>.TryParse(WebConfigurationManager.AppSettings[<span class="string">"updateEnabled"</span>].ToString(), <span class="keyword">out</span> updateEnabled))</div><div class="line">    &#123;</div><div class="line">        fileInfo.SupportsUpdate = updateEnabled;</div><div class="line">        fileInfo.UserCanWrite = updateEnabled;</div><div class="line">        fileInfo.SupportsLocks = updateEnabled;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> fileInfo;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"> <span class="comment">// GET api/&lt;controller&gt;/5</span></div><div class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></div><div class="line"><span class="comment"><span class="doctag">///</span> Get a single file contents</span></div><div class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></div><div class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="name"&gt;</span>filename<span class="doctag">&lt;/param&gt;</span></span></div><div class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;returns&gt;</span>a file stream<span class="doctag">&lt;/returns&gt;</span></span></div><div class="line">[Route(<span class="string">"files/&#123;name&#125;/contents"</span>)]</div><div class="line"><span class="function"><span class="keyword">public</span> HttpResponseMessage <span class="title">Get</span>(<span class="params"><span class="keyword">string</span> name, <span class="keyword">string</span> access_token</span>)</span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">try</span></div><div class="line">    &#123;</div><div class="line">        Validate(name, access_token);</div><div class="line">        <span class="keyword">var</span> file = HostingEnvironment.MapPath(<span class="string">"~/App_Data/"</span> + name);</div><div class="line">        <span class="keyword">var</span> responseMessage = <span class="keyword">new</span> HttpResponseMessage(HttpStatusCode.OK);</div><div class="line">        <span class="keyword">var</span> stream = <span class="keyword">new</span> FileStream(file, FileMode.Open, FileAccess.Read);</div><div class="line">        responseMessage.Content = <span class="keyword">new</span> StreamContent(stream);</div><div class="line">        responseMessage.Content.Headers.ContentType = <span class="keyword">new</span> MediaTypeHeaderValue(<span class="string">"application/octet-stream"</span>);</div><div class="line">        <span class="keyword">return</span> responseMessage;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">catch</span> (Exception ex)</div><div class="line">    &#123;</div><div class="line">        <span class="keyword">var</span> errorResponseMessage = <span class="keyword">new</span> HttpResponseMessage(HttpStatusCode.InternalServerError);</div><div class="line">        <span class="keyword">var</span> stream = <span class="keyword">new</span> MemoryStream(UTF8Encoding.Default.GetBytes(ex.Message ?? <span class="string">""</span>));</div><div class="line">        errorResponseMessage.Content = <span class="keyword">new</span> StreamContent(stream);</div><div class="line">        <span class="keyword">return</span> errorResponseMessage;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面的两个方法就是对CheckFileInfo服务和GetFile服务的实现，理解起来并不困难。</p>
+<p>由于是一个demo实现，我就直接拿来部署了，等到要改造的时候再去琢磨，打开配置web.config配置文件，修改如下的配置，表示此程序将要部署的地方和别名:</p>
+<p><img src="http://imglf2.ph.126.net/4dvF3D_9H94K4TcZ4aWtfA==/4869517097194648619.png" alt="这里写图片描述"></p>
+<p>访问<a href="http://192.168.1.136/hosting/discovery" target="_blank" rel="external">http://192.168.1.136/hosting/discovery</a>，保存内容到Discovery.xml文件，用此文件替换掉demo中的 WopiHost\App_Data\Discovery.xml文件:</p>
+<p><img src="http://imglf0.ph.126.net/lBcsIPYxKzv-UDrzq2qa0A==/6598260537809773239.png" alt="这里写图片描述"></p>
+<p>我这里直接部署在Office Web Apps所在的服务器上了， 在 HTTP80网站下面添加一个应用程序，别名为dist，与web.config对应上就行了，如下所示：</p>
+<p><img src="http://imglf0.ph.126.net/fLuzVLdmem7JyUdf-dQWlQ==/4884153795983838732.png" alt="这里写图片描述"></p>
+<p>部署成功后，访问 <a href="http://192.168.1.136/dist" target="_blank" rel="external">http://192.168.1.136/dist</a> ，打开此demo的主界面，在菜单栏upload页面里面上传一份文档，上传成功后会生成一个链接，访问链接就可以看到刚刚生成的文档了，如下所示：</p>
+<p><img src="http://imglf2.ph.126.net/KFe50-UolWoBtddKkbRRfg==/1995939059955698843.png" alt="这里写图片描述"></p>
+<p><img src="http://imglf0.ph.126.net/bV2tn4QDWudtkMd6eRuFLg==/6598103307647001882.png" alt="这里写图片描述"></p>
+<p>由于在web.config 中设置了  updateEnabled=true，所以这里可以对打开的excel进行编辑，如下所示:</p>
+<p><img src="http://imglf2.ph.126.net/YHjbRv0B5-fyBsU5neTPOA==/6598102208135370941.png" alt="这里写图片描述"></p>
+<p>这个demo就算部署成功了，至于这两个服务具体实现细节，查看代码即可。值得注意的是：这个demo实现并不支持word文档的编辑，作者也进行了说明:</p>
+<p><img src="http://imglf1.ph.126.net/vfVxaPjtKlXi5Zpn-6hdsw==/4859102523056544037.png" alt="这里写图片描述"></p>
+<blockquote>
+<p>The solution and project have been updated to MVC5, and Web API 2.  In<br>addition, editing PowerPoint (PPTX), and Excel files has been added.<br>Word Editing is not part of the solution. Also, PDF viewing is<br>enabled.</p>
+</blockquote>
+<p>在代码中位置如下:</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// POST api/&lt;controller&gt;</span></div><div class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></div><div class="line"><span class="comment"><span class="doctag">///</span> Not implemented, but will provide editing (simple)</span></div><div class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></div><div class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="access_token"&gt;</span><span class="doctag">&lt;/param&gt;</span></span></div><div class="line">[Route(<span class="string">"files/&#123;name&#125;/contents"</span>)]</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">async</span> <span class="keyword">void</span> <span class="title">Post</span>(<span class="params"><span class="keyword">string</span> name, [FromUri] <span class="keyword">string</span> access_token</span>)</span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">var</span> body = <span class="keyword">await</span> Request.Content.ReadAsByteArrayAsync();</div><div class="line">    <span class="keyword">var</span> appData = HostingEnvironment.MapPath(<span class="string">"~/App_Data/"</span>);</div><div class="line">    <span class="keyword">var</span> fileExt = name.Substring(name.LastIndexOf(<span class="string">'.'</span>) + <span class="number">1</span>);</div><div class="line">    <span class="keyword">var</span> outFile = Path.Combine(</div><div class="line">        appData,name);</div><div class="line">        <span class="comment">//Guid.NewGuid().ToString() +</span></div><div class="line">        <span class="comment">//"_" +</span></div><div class="line">        <span class="comment">//name);</span></div><div class="line">    <span class="comment">//var fi = new FileInfo(outFile);</span></div><div class="line">    File.WriteAllBytes(outFile, body);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里应该是故意不给实现的，要想实现word编辑，就得靠各位的努力了，我也在研究中，希望和大家一起交流交流。当然，你也可以用任何的语言来实现这个程序，只要保证那两个接口能返回相应的文件信息和对应的数据流就行了，至于文件放在何处，用什么语言，这都是小事。</p>
+<p>JAVA程序整合可参考我的这篇文章：<a href="http://www.chenyp.com/2017/03/31/office-online-java-app">《Java 程序与 Office Web Apps 整合》</a>。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechat.png" alt="DistChen WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.png" alt="DistChen Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/web/" rel="tag"># web</a>
+          
+            <a href="/tags/office/" rel="tag"># office</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/15/office-online/" rel="next" title="在线浏览 Office 文档之 Office Web Apps">
+                <i class="fa fa-chevron-left"></i> 在线浏览 Office 文档之 Office Web Apps
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/08/16/tag-input/" rel="prev" title="标签式的选择输入框">
+                标签式的选择输入框 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="SOHUCS" ></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/avatar.png"
+               alt="DistChen" />
+          <p class="site-author-name" itemprop="name">DistChen</p>
+          <p class="site-description motion-element" itemprop="description">梦想还是要有的，万一实现了呢？</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">35</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/DistChen" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/ooqingkuangoo" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">DistChen</span> ● 
+  <a href="http://www.miitbeian.gov.cn">鄂ICP备17010195号-2</a>
+</div>
+
+
+<div class="powered-by">
+  邮箱： <a class="theme-link" href="mailto:chenyp@chenyp.com">chenyp@chenyp.com</a> 
+</div>
+
+<div class="theme-info">
+  <a class="theme-link" title="365061362" target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=365061362&site=qq&menu=yes">QQ联系</a>
+</div>
+
+
+        
+
+<span class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-user"></i>访客人数:<span class="busuanzi-value" id="busuanzi_value_site_uv">0</span>人</span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i>访问次数:<span class="busuanzi-value" id="busuanzi_value_site_pv">0</span>次</span>
+  
+  
+</span>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+	
+		 <script type="text/javascript"> 
+		(function(){ 
+		var appid = 'cyt42c1yO'; 
+		var conf = 'c2e8cb34856682963b6040051360b87f'; 
+		var width = window.innerWidth || document.documentElement.clientWidth; 
+		if (width < 960) { 
+		window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); } })(); </script>
+		<script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+	
+
+  
+  
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

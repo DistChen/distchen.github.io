@@ -1,0 +1,826 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="GIS,shp,DB," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="最近因为工作上的项目需求，研究了下如何将shp文件里面的空间数据入库。
+oracle提供oracle.spatial.util.SampleShapefileToJGeomFeature
+http://docs.oracle.com/cd/E11882_01/appdev.112/e11830/sdo_shapefile_converter.htm#SPATL1427
+
+这是由oracle 提供的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="shp 文件数据入库的几种解决思路">
+<meta property="og:url" content="http://www.chenyp.com/2015/11/15/shp-to-db/index.html">
+<meta property="og:site_name" content="DistChen">
+<meta property="og:description" content="最近因为工作上的项目需求，研究了下如何将shp文件里面的空间数据入库。
+oracle提供oracle.spatial.util.SampleShapefileToJGeomFeature
+http://docs.oracle.com/cd/E11882_01/appdev.112/e11830/sdo_shapefile_converter.htm#SPATL1427
+
+这是由oracle 提供的">
+<meta property="og:image" content="http://www.chenyp.com/img/20160827124740950.png">
+<meta property="og:image" content="http://www.chenyp.com/img/20160827125249970.png">
+<meta property="og:image" content="http://www.chenyp.com/img/20160827130815117.png">
+<meta property="og:image" content="http://www.chenyp.com/img/20160827130928539.png">
+<meta property="og:image" content="http://www.chenyp.com/img/6630426750420991404.png">
+<meta property="og:image" content="http://www.chenyp.com/img/20160827131147712.png">
+<meta property="og:image" content="http://www.chenyp.com/img/1164743453646776337.png">
+<meta property="og:updated_time" content="2016-11-16T06:30:47.807Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="shp 文件数据入库的几种解决思路">
+<meta name="twitter:description" content="最近因为工作上的项目需求，研究了下如何将shp文件里面的空间数据入库。
+oracle提供oracle.spatial.util.SampleShapefileToJGeomFeature
+http://docs.oracle.com/cd/E11882_01/appdev.112/e11830/sdo_shapefile_converter.htm#SPATL1427
+
+这是由oracle 提供的">
+<meta name="twitter:image" content="http://www.chenyp.com/img/20160827124740950.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'DistChen'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.chenyp.com/2015/11/15/shp-to-db/"/>
+
+
+
+
+
+  <title> shp 文件数据入库的几种解决思路 | DistChen </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?540e274718a25b28e12d4a5c890221bd";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta custom-logo">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">DistChen</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://www.chenyp.com/2015/11/15/shp-to-db/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="DistChen">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="DistChen">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="DistChen" src="avatar.jpg">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                shp 文件数据入库的几种解决思路
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-11-15T08:53:19+08:00">
+              2015-11-15
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2016-11-16T14:30:47+08:00">
+              2016-11-16
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/GIS/" itemprop="url" rel="index">
+                    <span itemprop="name">GIS</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+                <!--noindex-->
+                <span class="post-comments-count">
+                <span class="post-meta-divider">&nbsp; | &nbsp;</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                
+                    <a href="/2015/11/15/shp-to-db/#SOHUCS" itemprop="discussionUrl">
+                      <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2015/11/15/shp-to-db/" itemprop="commentsCount"></span>
+                    </a>
+                  &nbsp;条
+                
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-eye"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+              </span>
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近因为工作上的项目需求，研究了下如何将shp文件里面的空间数据入库。</p>
+<h2 id="oracle提供oracle-spatial-util-SampleShapefileToJGeomFeature"><a href="#oracle提供oracle-spatial-util-SampleShapefileToJGeomFeature" class="headerlink" title="oracle提供oracle.spatial.util.SampleShapefileToJGeomFeature"></a>oracle提供oracle.spatial.util.SampleShapefileToJGeomFeature</h2><blockquote>
+<p><a href="http://docs.oracle.com/cd/E11882_01/appdev.112/e11830/sdo_shapefile_converter.htm#SPATL1427" target="_blank" rel="external">http://docs.oracle.com/cd/E11882_01/appdev.112/e11830/sdo_shapefile_converter.htm#SPATL1427</a></p>
+</blockquote>
+<p>这是由oracle 提供的 shp 入库方法，入库后的空间数据类型是 SDO_GEOMETRY，而不是ST_GEOMETRY。该方法使用很简单，只需设定好对应的参数即可，可以直接通过命令行的形式使用:<br><a id="more"></a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">Parameters</div><div class="line"></div><div class="line">-h: Host machine with an existing Oracle database</div><div class="line"></div><div class="line">-p: Port on the host machine (for example, 1521)</div><div class="line"></div><div class="line">-s: SID (database name) on the host machine</div><div class="line"></div><div class="line">-u: Database user</div><div class="line"></div><div class="line">-d: Password for the database use</div><div class="line"></div><div class="line">-t: Table name for the converted Shapefile</div><div class="line"></div><div class="line">-f: File name of an input Shapefile (with or without extension)</div><div class="line"></div><div class="line">-i: Column name for unique numeric ID, if required</div><div class="line"></div><div class="line">-r: Valid Oracle SRID for coordinate system; use 0 if unknown</div><div class="line"></div><div class="line">-g: Preferred SDO_GEOMETRY column name</div><div class="line"></div><div class="line">-x: Bounds for the X dimension; use -180,180 if unknown</div><div class="line"></div><div class="line">-y: Bounds for the Y dimension; use -90,90 if unknown</div><div class="line"></div><div class="line">-o: Load tolerance fields (x and y) in metadata; if not specified, tolerance fields are 0.05</div><div class="line"></div><div class="line">-a: Append Shapefile data to an existing table</div><div class="line"></div><div class="line">-n: Start ID for column specified in -i parameter</div><div class="line"></div><div class="line">-c: Commit interval; by default, commits occur every 1000 conversions and at the end</div><div class="line"></div><div class="line">-v: Println interval; by default, a display every 10 conversions</div></pre></td></tr></table></figure></p>
+<p>oracle提供的用于操作 oracle spatial 的jar包位于 ORACLE_HOME/md/*，如下:<br><img src="/img/20160827124740950.png" alt="这里写图片描述"></p>
+<h2 id="oracleplugin"><a href="#oracleplugin" class="headerlink" title="oracleplugin"></a>oracleplugin</h2><blockquote>
+<p><a href="http://docs.geotools.org/latest/userguide/library/jdbc/oracle.html" target="_blank" rel="external">http://docs.geotools.org/latest/userguide/library/jdbc/oracle.html</a></p>
+</blockquote>
+<p>这是由geotools提供的专门连接并操作oracle 数据库的方法，使用该 Plugin可以很方便的基于oracle 创建图层、添加要素，但是遗憾的是，也是属于 oracle spatial，不过可以学习了解下，一个简单的连接数据库并基于一个shp图层创建一张空间表的示例如下:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">oracle115</span><span class="params">()</span></span>&#123;</div><div class="line">     Map params = <span class="keyword">new</span> java.util.HashMap();</div><div class="line">     params.put( <span class="string">"dbtype"</span>, <span class="string">"oracle"</span>);</div><div class="line">     params.put( <span class="string">"host"</span>, <span class="string">"127.0.0.1"</span>);</div><div class="line">     params.put( <span class="string">"port"</span>, <span class="number">1521</span>);</div><div class="line">     params.put( <span class="string">"schema"</span>, <span class="string">"SCOTT"</span>);</div><div class="line">     params.put( <span class="string">"database"</span>, <span class="string">"ORCL"</span>);</div><div class="line">     params.put( <span class="string">"user"</span>, <span class="string">"scott"</span>);</div><div class="line">     params.put( <span class="string">"passwd"</span>, <span class="string">"orcl"</span>);</div><div class="line">     <span class="keyword">try</span> &#123;</div><div class="line">         OracleNGDataStoreFactory factory=<span class="keyword">new</span> OracleNGDataStoreFactory();</div><div class="line">         DataStore dataStore = factory.createDataStore(params);</div><div class="line">         String typeName = <span class="string">"DEMO"</span>;<span class="comment">//dataStore.getTypeNames()[0]; // 文件名称</span></div><div class="line">         FeatureSource&lt;SimpleFeatureType, SimpleFeature&gt; featureSource = <span class="keyword">null</span>;</div><div class="line">         featureSource = (FeatureSource&lt;SimpleFeatureType, SimpleFeature&gt;)dataStore.getFeatureSource(typeName);</div><div class="line">         FeatureCollection&lt;SimpleFeatureType, SimpleFeature&gt; result = featureSource.getFeatures();</div><div class="line">         SimpleFeatureType schema=result.getSchema();</div><div class="line">         List&lt;AttributeDescriptor&gt; columns=schema.getAttributeDescriptors();</div><div class="line">         FeatureIterator&lt;SimpleFeature&gt; itertor = result.features();</div><div class="line">         <span class="keyword">while</span>(itertor.hasNext())&#123;</div><div class="line">             SimpleFeature feature = itertor.next();</div><div class="line">             System.out.print(feature.getID()+<span class="string">" "</span>);</div><div class="line">             <span class="keyword">for</span> (AttributeDescriptor column : columns) &#123;</div><div class="line">                 String attribute = column.getName().toString();</div><div class="line">                 System.out.print(attribute + <span class="string">":"</span> + feature.getAttribute(attribute) + <span class="string">"  "</span>);</div><div class="line">             &#125;</div><div class="line">         &#125;</div><div class="line">         itertor.close();</div><div class="line">     &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">         e.printStackTrace();</div><div class="line">     &#125;</div><div class="line"> &#125;</div></pre></td></tr></table></figure></p>
+<p>基于已经连接的DataStore可以取得当前连接对象等，可以很方便的进行数据库操作，这个Plugin依赖如下的jar包:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.geotools.jdbc<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>gt-jdbc-oracle<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>11.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><img src="/img/20160827125249970.png" alt="这里写图片描述"></p>
+<p>利用maven配置依赖时，需要指定私服地址，在中央仓库中并没有这些资源，私服地址如下:<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">repository</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">id</span>&gt;</span>osgeo<span class="tag">&lt;/<span class="name">id</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>Open Source Geospatial Foundation Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://download.osgeo.org/webdav/geotools/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">repository</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<h2 id="arcsdeplugin"><a href="#arcsdeplugin" class="headerlink" title="arcsdeplugin"></a>arcsdeplugin</h2><blockquote>
+<p><a href="http://docs.geotools.org/latest/userguide/library/data/arcsde.html" target="_blank" rel="external">http://docs.geotools.org/latest/userguide/library/data/arcsde.html</a></p>
+</blockquote>
+<p>   这是Geotools 针对 arcsde 的方法，使用该插件与oracle plugin 类似，生成的空间数据类型是st_geometry ，是符合要求的，感觉基本上就是调用的 arcsde jdk for java 提供的方法，所以还需要使用到 arcsde 的jdk。其连接到srcsde服务的代码如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">arcsde</span><span class="params">()</span></span>&#123;</div><div class="line">    Map map = <span class="keyword">new</span> HashMap();</div><div class="line">    map.put( <span class="string">"dbtype"</span>, <span class="string">"arcsde"</span> );</div><div class="line">    map.put( <span class="string">"server"</span>, <span class="string">"localhost"</span> );</div><div class="line">    map.put( <span class="string">"port"</span>, <span class="string">"5151"</span> );</div><div class="line">    map.put( <span class="string">"instance"</span>, <span class="string">"sde"</span> );</div><div class="line">    map.put( <span class="string">"user"</span>, <span class="string">"scott"</span> );</div><div class="line">    map.put( <span class="string">"password"</span>, <span class="string">"orcl"</span> );</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        ArcSDEDataStore dataStore=(ArcSDEDataStore) DataStoreFinder.getDataStore(map);</div><div class="line">        File file = <span class="keyword">new</span> File(<span class="string">"C:\\Users\\chenyp\\Desktop\\tj\\data\\dk.shp"</span>);</div><div class="line">        ShapefileDataStore shpDataStore = <span class="keyword">new</span> ShapefileDataStore(file.toURI().toURL());</div><div class="line">        FeatureSource&lt;SimpleFeatureType, SimpleFeature&gt; featureSource = (FeatureSource&lt;SimpleFeatureType, SimpleFeature&gt;)shpDataStore.getFeatureSource(<span class="string">"DEMO"</span>);</div><div class="line">        FeatureCollection&lt;SimpleFeatureType, SimpleFeature&gt; results = featureSource.getFeatures();</div><div class="line">        dataStore.createSchema(shpDataStore.getSchema());</div><div class="line">        ArcSdeFeatureStore arcSdeFeatureStore=<span class="keyword">new</span> ArcSdeFeatureStore(<span class="keyword">null</span>,dataStore);</div><div class="line">        Transaction transaction=arcSdeFeatureStore.getTransaction();</div><div class="line">        arcSdeFeatureStore.addFeatures(results);</div><div class="line">        transaction.commit();</div><div class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">        e.printStackTrace();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>arcsde服务连接到数据库，并基于某个图层创建空间表。不过在这里直接把图层里的feature 插入到刚刚创建的图层时还有点问题。主要是彼此之间的关系还没弄清楚，很多类都是保护型的，没法实例化，需要转来转去的。需要用到的依赖如下：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.geotools<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>gt-arcsde<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>11.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p><img src="/img/20160827130815117.png" alt="这里写图片描述"></p>
+<p>除此之外，还需要引入arcsde 的相关jar包。</p>
+<h2 id="Arcgis-工具-arcsde"><a href="#Arcgis-工具-arcsde" class="headerlink" title="Arcgis 工具 arcsde"></a>Arcgis 工具 arcsde</h2><p>调用arcsde提供的工具shp2sde(也是偶然想到既然有sdeservice 工具，会不会还有其它工具，一看果然还有好多有用的)。ArcSDE提供了很多工具，可以借助这些工具来完成相关的操作。在ArcCatalog 中带ui的功能，有一些通过命令行是可以完成的。shp2sde 就是用来完成shp入库的，而且效率很高。<br><img src="/img/20160827130928539.png" alt="这里写图片描述"></p>
+<p>关于shp2sde命令，参考如下:<a href="http://edndoc.esri.com/arcsde/9.0/admin_cmd_refs/shp2sde.htm，下面是一个示例：" target="_blank" rel="external">http://edndoc.esri.com/arcsde/9.0/admin_cmd_refs/shp2sde.htm，下面是一个示例：</a><br><img src="/img/6630426750420991404.png" alt="这里写图片描述"></p>
+<p>ArcSDE还提供了很多其它类型的工具：<br><img src="/img/20160827131147712.png" alt="这里写图片描述"></p>
+<p>最终，依据可行性和效率的考量，我实现的将服务器中的shp入库效果如下:<br><img src="/img/1164743453646776337.png" alt="这里写图片描述"></p>
+<p>还有一些其他的开源gis工具也可以实现shp入库，比如OGR 等。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechat.png" alt="DistChen WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.png" alt="DistChen Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/GIS/" rel="tag"># GIS</a>
+          
+            <a href="/tags/shp/" rel="tag"># shp</a>
+          
+            <a href="/tags/DB/" rel="tag"># DB</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/10/14/cors/" rel="next" title="跨域资源访问">
+                <i class="fa fa-chevron-left"></i> 跨域资源访问
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/12/01/js-snapscreen/" rel="prev" title="JS 网页截图、涂鸦">
+                JS 网页截图、涂鸦 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="SOHUCS" ></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/avatar.png"
+               alt="DistChen" />
+          <p class="site-author-name" itemprop="name">DistChen</p>
+          <p class="site-description motion-element" itemprop="description">梦想还是要有的，万一实现了呢？</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">35</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/DistChen" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/ooqingkuangoo" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#oracle提供oracle-spatial-util-SampleShapefileToJGeomFeature"><span class="nav-number">1.</span> <span class="nav-text">oracle提供oracle.spatial.util.SampleShapefileToJGeomFeature</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#oracleplugin"><span class="nav-number">2.</span> <span class="nav-text">oracleplugin</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#arcsdeplugin"><span class="nav-number">3.</span> <span class="nav-text">arcsdeplugin</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Arcgis-工具-arcsde"><span class="nav-number">4.</span> <span class="nav-text">Arcgis 工具 arcsde</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">DistChen</span> ● 
+  <a href="http://www.miitbeian.gov.cn">鄂ICP备17010195号-2</a>
+</div>
+
+
+<div class="powered-by">
+  邮箱： <a class="theme-link" href="mailto:chenyp@chenyp.com">chenyp@chenyp.com</a> 
+</div>
+
+<div class="theme-info">
+  <a class="theme-link" title="365061362" target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=365061362&site=qq&menu=yes">QQ联系</a>
+</div>
+
+
+        
+
+<span class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-user"></i>访客人数:<span class="busuanzi-value" id="busuanzi_value_site_uv">0</span>人</span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i>访问次数:<span class="busuanzi-value" id="busuanzi_value_site_pv">0</span>次</span>
+  
+  
+</span>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+	
+		 <script type="text/javascript"> 
+		(function(){ 
+		var appid = 'cyt42c1yO'; 
+		var conf = 'c2e8cb34856682963b6040051360b87f'; 
+		var width = window.innerWidth || document.documentElement.clientWidth; 
+		if (width < 960) { 
+		window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); } })(); </script>
+		<script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+	
+
+  
+  
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

@@ -1,0 +1,814 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="web,http," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="之前在做项目的过程中，有一件很痛苦的事情就是每次前端修改文件后(静态资源)，必须得清空下浏览器缓存才能生效，所以就看了下浏览器缓存相关的知识点。 
+
+http 协议中有这样几个 header：Last-Modified、ETag、Cache-Control、Expires 、If-None-Match 、If-Modified-Since等。访问一个网页可以在地址栏回车，可以F5刷新，Ctrl+">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浏览器缓存与访问方式">
+<meta property="og:url" content="http://www.chenyp.com/2016/11/14/browser-cache/index.html">
+<meta property="og:site_name" content="DistChen">
+<meta property="og:description" content="之前在做项目的过程中，有一件很痛苦的事情就是每次前端修改文件后(静态资源)，必须得清空下浏览器缓存才能生效，所以就看了下浏览器缓存相关的知识点。 
+
+http 协议中有这样几个 header：Last-Modified、ETag、Cache-Control、Expires 、If-None-Match 、If-Modified-Since等。访问一个网页可以在地址栏回车，可以F5刷新，Ctrl+">
+<meta property="og:image" content="http://www.chenyp.com/img/a1.png">
+<meta property="og:image" content="http://www.chenyp.com/img/a2.png">
+<meta property="og:image" content="http://www.chenyp.com/img/a3.png">
+<meta property="og:updated_time" content="2016-11-16T06:30:08.445Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="浏览器缓存与访问方式">
+<meta name="twitter:description" content="之前在做项目的过程中，有一件很痛苦的事情就是每次前端修改文件后(静态资源)，必须得清空下浏览器缓存才能生效，所以就看了下浏览器缓存相关的知识点。 
+
+http 协议中有这样几个 header：Last-Modified、ETag、Cache-Control、Expires 、If-None-Match 、If-Modified-Since等。访问一个网页可以在地址栏回车，可以F5刷新，Ctrl+">
+<meta name="twitter:image" content="http://www.chenyp.com/img/a1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'DistChen'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.chenyp.com/2016/11/14/browser-cache/"/>
+
+
+
+
+
+  <title> 浏览器缓存与访问方式 | DistChen </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?540e274718a25b28e12d4a5c890221bd";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta custom-logo">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">DistChen</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://www.chenyp.com/2016/11/14/browser-cache/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="DistChen">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="DistChen">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="DistChen" src="avatar.jpg">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                浏览器缓存与访问方式
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-14T10:17:00+08:00">
+              2016-11-14
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2016-11-16T14:30:08+08:00">
+              2016-11-16
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/web/" itemprop="url" rel="index">
+                    <span itemprop="name">web</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+                <!--noindex-->
+                <span class="post-comments-count">
+                <span class="post-meta-divider">&nbsp; | &nbsp;</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                
+                    <a href="/2016/11/14/browser-cache/#SOHUCS" itemprop="discussionUrl">
+                      <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2016/11/14/browser-cache/" itemprop="commentsCount"></span>
+                    </a>
+                  &nbsp;条
+                
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-eye"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+              </span>
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>之前在做项目的过程中，有一件很痛苦的事情就是每次前端修改文件后(静态资源)，必须得清空下浏览器缓存才能生效，所以就看了下浏览器缓存相关的知识点。 </p>
+</blockquote>
+<p>http 协议中有这样几个 header：Last-Modified、ETag、Cache-Control、Expires 、If-None-Match 、If-Modified-Since等。访问一个网页可以在地址栏回车，可以F5刷新，Ctrl+F5强制刷新、浏览器的刷新按钮等多种方式。让人想不到的是：不同的访问方式对于缓存的使用有很大区别。<br><a id="more"></a><br>这里就不介绍这些header是干什么用的了，网上资料很多，请自行查找。这里总结下几个容易忽略的点：</p>
+<ul>
+<li>Last-Modified 、ETag 是设置在response里面的，两者可以一起用，也可以只用其中一个；</li>
+<li>If-Modified-Since 、If-None-Match 是设置在request中的，由浏览器从资源的上次响应中提取Last-Modified 、ETag值(如果有，没有的话，服务器提取到的值是-1和null)，然后发给服务器;</li>
+<li>Last-Modified只能精确到秒级。当在服务端设置响应的Last-Modified值时，即使设置的值精确到了毫秒并返回给浏览器。但是浏览器下次请求时携带的If-Modified-Since值也会丢失毫秒值，因此如果用Last-Modified来校验文件是否变化，一般会在其基础上加上1000L来进行比较； </li>
+<li>不管Cache-Control是什么值，浏览器都会缓存资源。很多人以为Cache-Control设置了 no-cache 之类的值后，浏览器就不会缓存资源了。其实不然，不管该值为什么，浏览器都会缓存下来。</li>
+</ul>
+<p>不同的访问方式对于缓存的处理以及请求的构造是不同的：</p>
+<h3 id="Ctrl-F5-强制刷新"><a href="#Ctrl-F5-强制刷新" class="headerlink" title="Ctrl+F5 强制刷新"></a>Ctrl+F5 强制刷新</h3><blockquote>
+<p>浏览器请求时，不管有没有缓存，浏览器都会重新发起一次http请求，并且不会携带If-None-Match 、If-Modified-Since值。服务器收到这次请求后，因为没有相应的If-None-Match 、If-Modified-Since值，无法验证资源的状态，所以会重新返回内容，状态设为200。浏览器收到响应后，再重新缓存。<br><img src="/img/a1.png" alt="这里写图片描述"></p>
+</blockquote>
+<h3 id="F5-刷新、刷新按钮"><a href="#F5-刷新、刷新按钮" class="headerlink" title="F5 刷新、刷新按钮"></a>F5 刷新、刷新按钮</h3><blockquote>
+<p>这种请求方式下，与上一个类似：不管有没有缓存，浏览器都会重新发起一次http请求。不同的是，如果资源之前有缓存过，就会设置相应的If-None-Match 、If-Modified-Since值(如果有)到 request中，服务器根据这些值与文件的状态来确定返回的状态码：200还是304。如果文件没有修改过，就返回304，并且不传输任何内容；如果文件修改过，就返回200，并将新的内容返回。不管返回什么状态，缓存文件都会持续更新，比如返回304的时候，Cache-Control 的值又设置了一个新的值，那么原有的缓存文件也会更新此值。<br><img src="/img/a2.png" alt="这里写图片描述"></p>
+</blockquote>
+<h3 id="地址栏回车、前进、后退、新窗口、新标签页等"><a href="#地址栏回车、前进、后退、新窗口、新标签页等" class="headerlink" title="地址栏回车、前进、后退、新窗口、新标签页等"></a>地址栏回车、前进、后退、新窗口、新标签页等</h3><blockquote>
+<p>这种方式下，如果Cache-Control或者Expires 设置的值还有效，那么浏览器不会发起http请求，而是直接从缓存中取对应的内容(此时服务器打断点也进不去可以验证)；如果Cache-Control或者Expires无效了，那么浏览器就会重新发起http请求并携带If-Modified-Since 、If-None-Match头(如果有)，这时就与上面的处理过程类似了。<br><img src="/img/a3.png" alt="这里写图片描述"></p>
+</blockquote>
+<p> 从上面可以看出，Last-Modified、ETag、Cache-Control、Expires、If-None-Match 、If-Modified-Since 这些header是没有任何冲突的，使用场景也划分的很清晰。Last-Modified、ETag设置在响应里面，用于浏览器在 request 的时候设置这些值到 If-Modified-Since、If-None-Match。Cache-Control、Expires 的值是在用地址栏回车等访问方式的情况下，浏览器用来判断是否发起http请求的依据，并不是用来决定是否进行缓存的依据。如果有效，就不发起请求；如果缓存过期或者no-cache等无效状态，则发起请求。</p>
+<p>前面说过不管Cache-Control是什么值，浏览器都会缓存资源，怎样验证？假设第一次请求某个资源时，response 设置 Cache-Control 为 no-cache，并设置了ETag 或 Last-Modified；在资源不修改的情况下，第二次继续访问，通过携带的 If-Modified-Since 、If-None-Match ，服务器会返回304，而且可以不返回任何内容。如果第一次不缓存的话，这里又不返回任何内容，那么我们肯定无法显示资源，而实际上，第二次不返回任何内容，也是可以正常显示资源的，所以可以验证不管Cache-Control是什么值，浏览器都会缓存资源。</p>
+<p>上面的这些，我是写了一个Filter 来进行验证的，Filter 代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GZIPFilterByETag</span> <span class="keyword">implements</span> <span class="title">Filter</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> ServletContext servletContext;</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(FilterConfig filterConfig)</span> <span class="keyword">throws</span> ServletException </span>&#123;</div><div class="line">    	<span class="keyword">this</span>.servletContext = filterConfig.getServletContext();</div><div class="line">    &#125;</div><div class="line">   </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doFilter</span><span class="params">(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)</span> <span class="keyword">throws</span> IOException, ServletException </span>&#123;</div><div class="line">        HttpServletRequest request = (HttpServletRequest)servletRequest;</div><div class="line">        HttpServletResponse response = (HttpServletResponse)servletResponse;</div><div class="line">        String url = request.getRequestURI();</div><div class="line">        String filePath = url.substring(request.getContextPath().length());</div><div class="line">        String lastETag = request.getHeader(<span class="string">"If-None-Match"</span>);</div><div class="line">        String currentETag = getFileETage(filePath);</div><div class="line">        response.setHeader(<span class="string">"Cache-Control"</span>, <span class="string">"max-age=10"</span>);<span class="comment">//no-cache</span></div><div class="line">        response.setHeader(<span class="string">"ETag"</span>, currentETag);</div><div class="line">        <span class="keyword">if</span>(currentETag.equals(lastETag))&#123;</div><div class="line">            response.setStatus(<span class="number">304</span>);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            ServletOutputStream servletOutputStream = response.getOutputStream();</div><div class="line">            servletOutputStream.write(getFileContent(filePath));</div><div class="line">            servletOutputStream.flush();</div><div class="line">            servletOutputStream.close();</div><div class="line">        &#125;   </div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getFileETage</span><span class="params">(String filePath)</span> </span>&#123;</div><div class="line">        String value = <span class="keyword">null</span>;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            File file = <span class="keyword">new</span> File(<span class="keyword">this</span>.servletContext.getRealPath(<span class="string">"/"</span>)+File.separator+filePath);</div><div class="line">            FileInputStream in = <span class="keyword">new</span> FileInputStream(file);</div><div class="line">            MappedByteBuffer byteBuffer = in.getChannel().map(FileChannel.MapMode.READ_ONLY, <span class="number">0</span>, file.length());</div><div class="line">            MessageDigest md5 = MessageDigest.getInstance(<span class="string">"MD5"</span>);</div><div class="line">            md5.update(byteBuffer);</div><div class="line">            BigInteger bi = <span class="keyword">new</span> BigInteger(<span class="number">1</span>, md5.digest());</div><div class="line">            value = bi.toString(<span class="number">16</span>);</div><div class="line">            in.close();</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> value;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="keyword">private</span> <span class="keyword">byte</span>[] getFileContent(String filePath) <span class="keyword">throws</span> IOException&#123;</div><div class="line">    	InputStream fileInputStream = <span class="keyword">this</span>.servletContext.getResourceAsStream(filePath);</div><div class="line">        ByteArrayOutputStream bytes = <span class="keyword">new</span> ByteArrayOutputStream(<span class="number">1048576</span>);</div><div class="line">        <span class="keyword">int</span> length = <span class="number">0</span>;</div><div class="line">        <span class="keyword">byte</span>[] buf = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">65536</span>];</div><div class="line">        <span class="keyword">while</span> (length &gt;= <span class="number">0</span>) &#123;</div><div class="line">            length = fileInputStream.read(buf);</div><div class="line">            <span class="keyword">if</span> (length &gt; <span class="number">0</span>) &#123;</div><div class="line">                bytes.write(buf, <span class="number">0</span>, length);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        fileInputStream.close();</div><div class="line">        <span class="keyword">return</span> bytes.toByteArray();</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">destroy</span><span class="params">()</span> </span>&#123;&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>web.xml 配置如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">filter</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>GZipFilter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">filter-class</span>&gt;</span>distchen.GZIPFilterByETag<span class="tag">&lt;/<span class="name">filter-class</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">filter</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>GZipFilter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>*.js<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">filter-mapping</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">filter-name</span>&gt;</span>GZipFilter<span class="tag">&lt;/<span class="name">filter-name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">url-pattern</span>&gt;</span>*.css<span class="tag">&lt;/<span class="name">url-pattern</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">filter-mapping</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>需要注意的是，上面说的这些行为是针对浏览器发起的请求，不针对非浏览器发起的请求(比如 ajax 请求等)。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechat.png" alt="DistChen WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.png" alt="DistChen Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/web/" rel="tag"># web</a>
+          
+            <a href="/tags/http/" rel="tag"># http</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/11/01/cas-sso/" rel="next" title="单点登录(SSO) CAS 实践">
+                <i class="fa fa-chevron-left"></i> 单点登录(SSO) CAS 实践
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/11/15/dynamic-gzip/" rel="prev" title="在 Web 程序中动态添加 GZIP 支持">
+                在 Web 程序中动态添加 GZIP 支持 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="SOHUCS" ></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/avatar.png"
+               alt="DistChen" />
+          <p class="site-author-name" itemprop="name">DistChen</p>
+          <p class="site-description motion-element" itemprop="description">梦想还是要有的，万一实现了呢？</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">35</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/DistChen" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/ooqingkuangoo" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Ctrl-F5-强制刷新"><span class="nav-number">1.</span> <span class="nav-text">Ctrl+F5 强制刷新</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#F5-刷新、刷新按钮"><span class="nav-number">2.</span> <span class="nav-text">F5 刷新、刷新按钮</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#地址栏回车、前进、后退、新窗口、新标签页等"><span class="nav-number">3.</span> <span class="nav-text">地址栏回车、前进、后退、新窗口、新标签页等</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">DistChen</span> ● 
+  <a href="http://www.miitbeian.gov.cn">鄂ICP备17010195号-2</a>
+</div>
+
+
+<div class="powered-by">
+  邮箱： <a class="theme-link" href="mailto:chenyp@chenyp.com">chenyp@chenyp.com</a> 
+</div>
+
+<div class="theme-info">
+  <a class="theme-link" title="365061362" target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=365061362&site=qq&menu=yes">QQ联系</a>
+</div>
+
+
+        
+
+<span class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-user"></i>访客人数:<span class="busuanzi-value" id="busuanzi_value_site_uv">0</span>人</span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i>访问次数:<span class="busuanzi-value" id="busuanzi_value_site_pv">0</span>次</span>
+  
+  
+</span>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+	
+		 <script type="text/javascript"> 
+		(function(){ 
+		var appid = 'cyt42c1yO'; 
+		var conf = 'c2e8cb34856682963b6040051360b87f'; 
+		var width = window.innerWidth || document.documentElement.clientWidth; 
+		if (width < 960) { 
+		window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); } })(); </script>
+		<script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+	
+
+  
+  
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>

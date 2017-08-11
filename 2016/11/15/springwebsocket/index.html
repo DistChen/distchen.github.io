@@ -1,0 +1,814 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="java,C#,websocket,spring-websocket," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="项目地址:https://distchen.github.io/DistSpringWebsocketClient-CSharp/ 
+如果你用过WebSocket 的话，你会觉得用来做推送等消息服务真轻松，同时你也会意识到因为其太简单，导致很多事情都需要自己处理。为了简化二次处理的过程，Spring 提供了一个 Spring WebSocket 模块，此模块用 Stomp 协议来处理消息，使得我们">
+<meta property="og:type" content="article">
+<meta property="og:title" content="跨平台的SpringWebsocket使用">
+<meta property="og:url" content="http://www.chenyp.com/2016/11/15/springwebsocket/index.html">
+<meta property="og:site_name" content="DistChen">
+<meta property="og:description" content="项目地址:https://distchen.github.io/DistSpringWebsocketClient-CSharp/ 
+如果你用过WebSocket 的话，你会觉得用来做推送等消息服务真轻松，同时你也会意识到因为其太简单，导致很多事情都需要自己处理。为了简化二次处理的过程，Spring 提供了一个 Spring WebSocket 模块，此模块用 Stomp 协议来处理消息，使得我们">
+<meta property="og:image" content="http://www.chenyp.com/img/c1.png">
+<meta property="og:image" content="http://www.chenyp.com/img/c2.png">
+<meta property="og:updated_time" content="2016-11-16T06:30:51.576Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="跨平台的SpringWebsocket使用">
+<meta name="twitter:description" content="项目地址:https://distchen.github.io/DistSpringWebsocketClient-CSharp/ 
+如果你用过WebSocket 的话，你会觉得用来做推送等消息服务真轻松，同时你也会意识到因为其太简单，导致很多事情都需要自己处理。为了简化二次处理的过程，Spring 提供了一个 Spring WebSocket 模块，此模块用 Stomp 协议来处理消息，使得我们">
+<meta name="twitter:image" content="http://www.chenyp.com/img/c1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'DistChen'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.chenyp.com/2016/11/15/springwebsocket/"/>
+
+
+
+
+
+  <title> 跨平台的SpringWebsocket使用 | DistChen </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?540e274718a25b28e12d4a5c890221bd";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta custom-logo">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">DistChen</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://www.chenyp.com/2016/11/15/springwebsocket/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="DistChen">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="DistChen">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="DistChen" src="avatar.jpg">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                跨平台的SpringWebsocket使用
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-11-15T12:26:38+08:00">
+              2016-11-15
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2016-11-16T14:30:51+08:00">
+              2016-11-16
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/websocket/" itemprop="url" rel="index">
+                    <span itemprop="name">websocket</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+                <!--noindex-->
+                <span class="post-comments-count">
+                <span class="post-meta-divider">&nbsp; | &nbsp;</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                
+                    <a href="/2016/11/15/springwebsocket/#SOHUCS" itemprop="discussionUrl">
+                      <span id="changyan_count_unit" class="post-comments-count hc-comment-count" data-xid="2016/11/15/springwebsocket/" itemprop="commentsCount"></span>
+                    </a>
+                  &nbsp;条
+                
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-eye"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+              </span>
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>项目地址:<a href="https://distchen.github.io/DistSpringWebsocketClient-CSharp/" target="_blank" rel="external">https://distchen.github.io/DistSpringWebsocketClient-CSharp/</a> </p>
+<p>如果你用过<a href="https://en.wikipedia.org/wiki/WebSocket" target="_blank" rel="external">WebSocket</a> 的话，你会觉得用来做推送等消息服务真轻松，同时你也会意识到因为其太简单，导致很多事情都需要自己处理。为了简化二次处理的过程，<a href="http://spring.io" target="_blank" rel="external">Spring</a> 提供了一个 <a href="http://docs.spring.io/spring/docs/4.3.0.RC2/spring-framework-reference/htmlsingle/#websocket-intro" target="_blank" rel="external">Spring WebSocket</a> 模块，此模块用 <a href="https://stomp.github.io/stomp-specification-1.2.html" target="_blank" rel="external">Stomp 协议</a>来处理消息，使得我们可以用发布、订阅的模式来使用WebSocket。</p>
+<p>这里要弄明白的是：<a href="http://docs.spring.io/spring/docs/4.3.0.RC2/spring-framework-reference/htmlsingle/#websocket-intro" target="_blank" rel="external">Spring WebSocket</a> 仅仅只是用了 <a href="https://stomp.github.io/stomp-specification-1.2.html" target="_blank" rel="external">Stomp 协议</a> 协议的消息格式，并不是说 <a href="http://docs.spring.io/spring/docs/4.3.0.RC2/spring-framework-reference/htmlsingle/#websocket-intro" target="_blank" rel="external">Spring WebSocket</a> 自己是一个 Stomp Server，所以是无法使用 <a href="https://stomp.github.io/stomp-specification-1.2.html" target="_blank" rel="external">Stomp 协议</a> 提供的各种 Client 来进行连接并使用的（<a href="http://jmesnil.net/stomp-websocket/doc/" target="_blank" rel="external">Stomp.js</a>除外）。因此如果想用 C# 等语言连接上 <a href="http://docs.spring.io/spring/docs/4.3.0.RC2/spring-framework-reference/htmlsingle/#websocket-intro" target="_blank" rel="external">Spring WebSocket</a>，只要保证发送的消息符合 <a href="https://stomp.github.io/stomp-specification-1.2.html#STOMP_Frames" target="_blank" rel="external">Stomp Frame</a> 的格式就行了。</p>
+<p><strong><a href="https://stomp.github.io/stomp-specification-1.2.html#STOMP_Frames" target="_blank" rel="external">Stomp Frame</a> 示例</strong></p>
+<pre><code>COMMAND
+header1:value1
+header2:value2
+
+Body^@
+</code></pre><a id="more"></a>
+<h2 id="stomp-js连接、发布、订阅"><a href="#stomp-js连接、发布、订阅" class="headerlink" title="stomp.js连接、发布、订阅"></a>stomp.js连接、发布、订阅</h2><h3 id="创建一个-Client-对象"><a href="#创建一个-Client-对象" class="headerlink" title="创建一个 Client 对象"></a>创建一个 Client 对象</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> client = Stomp.client(<span class="string">"ws://127.0.0.1:8080/dist"</span>);</div></pre></td></tr></table></figure>
+<h3 id="进行连接"><a href="#进行连接" class="headerlink" title="进行连接"></a>进行连接</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">client.connect(&#123;<span class="attr">login</span>:<span class="string">"distchen"</span>,<span class="attr">passcode</span>:<span class="string">"pass"</span>&#125;, <span class="function"><span class="keyword">function</span>(<span class="params">frame</span>) </span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(frame);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="订阅某个-topic"><a href="#订阅某个-topic" class="headerlink" title="订阅某个 topic"></a>订阅某个 topic</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> subscribe = client.subscribe(<span class="string">'/topic/greet/1'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">frame</span>)</span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(frame);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="发布消息到某个topic"><a href="#发布消息到某个topic" class="headerlink" title="发布消息到某个topic"></a>发布消息到某个topic</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">client.send(<span class="string">"/send/greet/1"</span>, &#123;&#125;, <span class="string">"hello world"</span>);</div></pre></td></tr></table></figure>
+<h3 id="取消订阅某个-topic"><a href="#取消订阅某个-topic" class="headerlink" title="取消订阅某个 topic"></a>取消订阅某个 topic</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">subscribe.unsubscribe(<span class="string">"/send/greet/1"</span>, &#123;&#125;, <span class="string">"hello world"</span>);</div></pre></td></tr></table></figure>
+<p>从上面可以看到，使用 Spring WebSocket 和 Stomp.js 可以使我们以非常优雅的方式来使用 WebSocket。很遗憾的是，这种优雅的方式目前只有 Stomp.js 才能用。为了说明这种优雅的方式其实在任何语言中都是可以使用的，因此才有了这个项目，只是简单说明怎样用其它语言处理 stomp.js 处理的事情，以C#为例，其它语言都是类似的处理。</p>
+<h2 id="我用-C-如何处理"><a href="#我用-C-如何处理" class="headerlink" title="我用 C# 如何处理"></a>我用 C# 如何处理</h2><p>此类库中，同样提供了一个Client 类(Dist.SpringWebsocket.Client)。</p>
+<h3 id="创建一个-Client-对象-1"><a href="#创建一个-Client-对象-1" class="headerlink" title="创建一个 Client 对象"></a>创建一个 Client 对象</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 第二个参数为一个委托，当服务不可用或者异常等均会调用，传递相应的代码和消息(异常)</span></div><div class="line">Client client = <span class="keyword">new</span> Client(<span class="string">"ws://127.0.0.1:8080/dist"</span>, <span class="keyword">new</span> Receive(<span class="keyword">delegate</span>(StompFrame frame)</div><div class="line">&#123;</div><div class="line">        txtContent.Text += frame.Code.ToString() + <span class="string">":"</span> + frame.Content + Environment.NewLine;</div><div class="line">        </div><div class="line">&#125;));</div></pre></td></tr></table></figure>
+<h3 id="进行连接-1"><a href="#进行连接-1" class="headerlink" title="进行连接"></a>进行连接</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//连接成功后同样会返回相应的 StompFrame </span></div><div class="line">Dictionary&lt;<span class="keyword">string</span>, <span class="keyword">string</span>&gt; headers = <span class="keyword">new</span> Dictionary&lt;<span class="keyword">string</span>, <span class="keyword">string</span>&gt;();</div><div class="line">headers.Add(<span class="string">"login"</span>, <span class="string">"DistChen"</span>);</div><div class="line">headers.Add(<span class="string">"passcode"</span>, <span class="string">"pass"</span>);</div><div class="line"><span class="keyword">this</span>.client.Connect(headers, <span class="keyword">new</span> Receive(<span class="keyword">delegate</span>(StompFrame frame)</div><div class="line">&#123;</div><div class="line">        txtContent.Text += frame.Code.ToString() + <span class="string">":"</span> + frame.Content + Environment.NewLine;</div><div class="line">&#125;));</div></pre></td></tr></table></figure>
+<h3 id="订阅某个-topic-1"><a href="#订阅某个-topic-1" class="headerlink" title="订阅某个 topic"></a>订阅某个 topic</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//订阅此topic后，之后发往此topic的消息均会调用此委托</span></div><div class="line"><span class="keyword">this</span>.client.Subscribe(<span class="string">"/topic/greet/1"</span>, <span class="keyword">new</span> Receive(<span class="keyword">delegate</span>(StompFrame frame)</div><div class="line">&#123;</div><div class="line">    txtContent.Text += frame.Code.ToString() + <span class="string">":"</span> + JObject.Parse(frame.Content).GetValue(<span class="string">"content"</span>) + Environment.NewLine;</div><div class="line">&#125;));</div></pre></td></tr></table></figure>
+<h3 id="发布消息到某个topic-1"><a href="#发布消息到某个topic-1" class="headerlink" title="发布消息到某个topic"></a>发布消息到某个topic</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">this</span>.client.Send(<span class="string">"/send/greet/1"</span>, <span class="string">"hello world"</span>);</div></pre></td></tr></table></figure>
+<h3 id="取消订阅某个-topic-1"><a href="#取消订阅某个-topic-1" class="headerlink" title="取消订阅某个 topic"></a>取消订阅某个 topic</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">this</span>.client.UnSubscribe(<span class="string">"/topic/greet/1"</span>);</div></pre></td></tr></table></figure>
+<p>从上面可以看到，使用了此类库后，处理方式与 stomp.js 很类似。不仅可以保证使用 spring websocket,而且还提供了很优雅的方式来使用。</p>
+<blockquote>
+<p>浏览器与PC端通信<br><br><img src="/img/c1.png" alt="image"><br><br>服务不可用时，相应的处理机制<br><br><img src="/img/c2.png" alt="image"></p>
+</blockquote>
+<p>这里只实现了如何用C#来做，用JAVA、SWIFT 等道理都是类似的，主要是构造好消息包就行了。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechat.png" alt="DistChen WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.png" alt="DistChen Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/C/" rel="tag"># C#</a>
+          
+            <a href="/tags/websocket/" rel="tag"># websocket</a>
+          
+            <a href="/tags/spring-websocket/" rel="tag"># spring-websocket</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/11/15/dynamic-gzip/" rel="next" title="在 Web 程序中动态添加 GZIP 支持">
+                <i class="fa fa-chevron-left"></i> 在 Web 程序中动态添加 GZIP 支持
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/11/16/ddoc/" rel="prev" title="DDoc.js-JS生成word文档">
+                DDoc.js-JS生成word文档 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="SOHUCS" ></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/avatar.png"
+               alt="DistChen" />
+          <p class="site-author-name" itemprop="name">DistChen</p>
+          <p class="site-description motion-element" itemprop="description">梦想还是要有的，万一实现了呢？</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">35</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">34</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/DistChen" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/ooqingkuangoo" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#stomp-js连接、发布、订阅"><span class="nav-number">1.</span> <span class="nav-text">stomp.js连接、发布、订阅</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建一个-Client-对象"><span class="nav-number">1.1.</span> <span class="nav-text">创建一个 Client 对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进行连接"><span class="nav-number">1.2.</span> <span class="nav-text">进行连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#订阅某个-topic"><span class="nav-number">1.3.</span> <span class="nav-text">订阅某个 topic</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#发布消息到某个topic"><span class="nav-number">1.4.</span> <span class="nav-text">发布消息到某个topic</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#取消订阅某个-topic"><span class="nav-number">1.5.</span> <span class="nav-text">取消订阅某个 topic</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#我用-C-如何处理"><span class="nav-number">2.</span> <span class="nav-text">我用 C# 如何处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建一个-Client-对象-1"><span class="nav-number">2.1.</span> <span class="nav-text">创建一个 Client 对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进行连接-1"><span class="nav-number">2.2.</span> <span class="nav-text">进行连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#订阅某个-topic-1"><span class="nav-number">2.3.</span> <span class="nav-text">订阅某个 topic</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#发布消息到某个topic-1"><span class="nav-number">2.4.</span> <span class="nav-text">发布消息到某个topic</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#取消订阅某个-topic-1"><span class="nav-number">2.5.</span> <span class="nav-text">取消订阅某个 topic</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">DistChen</span> ● 
+  <a href="http://www.miitbeian.gov.cn">鄂ICP备17010195号-2</a>
+</div>
+
+
+<div class="powered-by">
+  邮箱： <a class="theme-link" href="mailto:chenyp@chenyp.com">chenyp@chenyp.com</a> 
+</div>
+
+<div class="theme-info">
+  <a class="theme-link" title="365061362" target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=365061362&site=qq&menu=yes">QQ联系</a>
+</div>
+
+
+        
+
+<span class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-user"></i>访客人数:<span class="busuanzi-value" id="busuanzi_value_site_uv">0</span>人</span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i>访问次数:<span class="busuanzi-value" id="busuanzi_value_site_pv">0</span>次</span>
+  
+  
+</span>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+	
+		 <script type="text/javascript"> 
+		(function(){ 
+		var appid = 'cyt42c1yO'; 
+		var conf = 'c2e8cb34856682963b6040051360b87f'; 
+		var width = window.innerWidth || document.documentElement.clientWidth; 
+		if (width < 960) { 
+		window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); } })(); </script>
+		<script type="text/javascript" src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script>
+	
+
+  
+  
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+
+</body>
+</html>
