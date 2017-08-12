@@ -99,8 +99,9 @@
 配置全局name和Email
 12git config --global user.name &amp;quot;a">
 <meta property="og:image" content="http://www.chenyp.com/img/2017/jg1.jpg">
+<meta property="og:image" content="http://www.chenyp.com/img/2017/jg3.png">
 <meta property="og:image" content="http://www.chenyp.com/img/2017/jg2.png">
-<meta property="og:updated_time" content="2017-08-12T10:10:49.360Z">
+<meta property="og:updated_time" content="2017-08-12T10:18:09.465Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Jenkins配置Gitlab">
 <meta name="twitter:description" content="部署示例
@@ -328,7 +329,7 @@
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-check-o"></i>
             </span>
-            <time title="Post modified" itemprop="dateModified" datetime="2017-08-12T18:10:49+08:00">
+            <time title="Post modified" itemprop="dateModified" datetime="2017-08-12T18:18:09+08:00">
               2017-08-12
             </time>
             
@@ -428,9 +429,10 @@
 <p>至于构建环境、构建后的其它操作什么的根据实际情况决定即可，点击确定，整个配置就基本结束了，现在就可以开始构建。</p>
 <p>补充：如果构建触发器选择了<strong>Build when a change is pushed to GitLab. GitLab CI Service URL</strong>，那么需要在gitlab中的demo仓库中设置下webhook，否则不用配置，配置方式如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">进入demo仓库 -&gt; setting -&gt; Integrations</div><div class="line">    输入URL：http://192.168.1.1:8081/project/demo</div><div class="line">    选择：push event(其它的根据实际情况决定)</div></pre></td></tr></table></figure>
+<p><img src="/img/2017/jg3.png" alt=""></p>
 <p>手动点击构建和通过提交代码而产生的自动构建在显示上是有区分的，如下所示：</p>
 <p><img src="/img/2017/jg2.png" alt=""></p>
-<p>写的很简单，有疑问的地方，请随时沟通。</p>
+<p>写的很简单，有疑问的地方，请随时留言。</p>
 
       
     </div>
