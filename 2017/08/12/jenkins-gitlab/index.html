@@ -98,9 +98,9 @@
 安装Git在Jenkins(192.168.1.1)所在的服务器上面安装git，如下即可：1yum install git
 配置全局name和Email
 12git config --global user.name &amp;quot;a">
-<meta property="og:image" content="http://www.chenyp.com/img/2017/jg1.png">
+<meta property="og:image" content="http://www.chenyp.com/img/2017/jg1.jpg">
 <meta property="og:image" content="http://www.chenyp.com/img/2017/jg2.png">
-<meta property="og:updated_time" content="2017-08-12T10:02:00.739Z">
+<meta property="og:updated_time" content="2017-08-12T10:10:49.360Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Jenkins配置Gitlab">
 <meta name="twitter:description" content="部署示例
@@ -108,7 +108,7 @@
 安装Git在Jenkins(192.168.1.1)所在的服务器上面安装git，如下即可：1yum install git
 配置全局name和Email
 12git config --global user.name &amp;quot;a">
-<meta name="twitter:image" content="http://www.chenyp.com/img/2017/jg1.png">
+<meta name="twitter:image" content="http://www.chenyp.com/img/2017/jg1.jpg">
 
 
 
@@ -328,7 +328,7 @@
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-check-o"></i>
             </span>
-            <time title="Post modified" itemprop="dateModified" datetime="2017-08-12T18:02:00+08:00">
+            <time title="Post modified" itemprop="dateModified" datetime="2017-08-12T18:10:49+08:00">
               2017-08-12
             </time>
             
@@ -402,6 +402,7 @@
 <h3 id="安装Git"><a href="#安装Git" class="headerlink" title="安装Git"></a>安装Git</h3><p>在Jenkins(192.168.1.1)所在的服务器上面安装git，如下即可：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yum install git</div></pre></td></tr></table></figure></p>
 <p>配置全局name和Email</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">git config --global user.name &quot;admin&quot;</div><div class="line">git config --global user.email &quot;admin@example.com&quot;</div></pre></td></tr></table></figure>
+<a id="more"></a>
 <h3 id="生成SSH-Key"><a href="#生成SSH-Key" class="headerlink" title="生成SSH Key"></a>生成SSH Key</h3><p>在Jenkins(192.168.1.1)所在的服务器上面执行如下命令生成SSH Key:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ssh-keygen -t rsa -C &quot;admin@example.com&quot; -b 4096</div></pre></td></tr></table></figure>
 <blockquote>
@@ -419,9 +420,9 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">kind：GitLab API token</div><div class="line">API token：[上一步生成的token]</div></pre></td></tr></table></figure>
 <p>然后确定即可。</p>
 <h3 id="Jenkins设置Gitlab"><a href="#Jenkins设置Gitlab" class="headerlink" title="Jenkins设置Gitlab"></a>Jenkins设置Gitlab</h3><p>进入到 Jenkins -&gt; 系统管理 -&gt; 系统设置，滚动到Gitlab位置，点击添加，新增一个Gitlab connection，如下图所示：</p>
-<p><img src="/img/2017/jg1.png" alt=""></p>
+<p><img src="/img/2017/jg1.jpg" alt=""></p>
 <p>配置说明如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Connection name：[随便填入即可]</div><div class="line">Gitlab host URL：[填入Gitlab的部署地址即可]</div><div class="line">Credentials：[选择上面添加好的GitLab API token]</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Connection name：[随便填入即可]</div><div class="line">Gitlab host URL：http://192.168.1.2:8082</div><div class="line">Credentials：[选择上面添加好的GitLab API token]</div></pre></td></tr></table></figure>
 <h3 id="Jenkins中设置demo项目"><a href="#Jenkins中设置demo项目" class="headerlink" title="Jenkins中设置demo项目"></a>Jenkins中设置demo项目</h3><p>在Jenkins中新建demo项目(对应gitlab中的demo仓库)，主要配置如下（自行根据层级关系对应到界面）：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">源码管理:</div><div class="line">    git：</div><div class="line">        Repositories: </div><div class="line">            Repository URL：git@192.168.1.2:admin/demo.git</div><div class="line">            Credentials：[选择上面已经设置的SSH Username with private key]</div><div class="line">        Branches to build：</div><div class="line">            Branch Specifier (blank for &apos;any&apos;)：[默认为*/master，根据实际情况决定]</div><div class="line">        源码库浏览器：gitlab</div><div class="line">            URL：http://192.168.1.2:8082/admin/demo</div><div class="line">            Version：[rpm -qa|grep gitlab查看后输入，比如查到9.4.3，输入9.4就行了]</div><div class="line"></div><div class="line">构建触发器：[可选配置，如果没有自动构建要求可跳过，下面演示根据gitlab的push event触发自动构建]</div><div class="line">    选择 Build when a change is pushed to GitLab. GitLab CI Service URL：http://192.168.1.1/project/demo</div><div class="line">    （请注意：这个url其实是Gitlab hook plugin生成的webhook地址，等会需要配置在gitlab中，但是这里缺了端口，如果不是80端口，需要自己补上）</div><div class="line">        然后选择 push event，其它根据实际需要勾选</div></pre></td></tr></table></figure>
 <p>至于构建环境、构建后的其它操作什么的根据实际情况决定即可，点击确定，整个配置就基本结束了，现在就可以开始构建。</p>
@@ -429,6 +430,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">进入demo仓库 -&gt; setting -&gt; Integrations</div><div class="line">    输入URL：http://192.168.1.1:8081/project/demo</div><div class="line">    选择：push event(其它的根据实际情况决定)</div></pre></td></tr></table></figure>
 <p>手动点击构建和通过提交代码而产生的自动构建在显示上是有区分的，如下所示：</p>
 <p><img src="/img/2017/jg2.png" alt=""></p>
+<p>写的很简单，有疑问的地方，请随时沟通。</p>
 
       
     </div>
