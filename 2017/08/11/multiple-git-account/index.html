@@ -96,13 +96,15 @@
 当然，如果你以HTTP(S)的方式通信(clone、push代码什么的)，不会有任何问题。相信很少人这么做，毕竟每一次输入账号/密码还是很繁琐的。所以这里针对的是使用SSH的方式。
 当我们第一次使用Git时，通过下面的命令来生成公钥和私钥：
 1s">
-<meta property="og:updated_time" content="2017-08-12T03:44:34.724Z">
+<meta property="og:image" content="http://www.chenyp.com/img/2017/git1.png">
+<meta property="og:updated_time" content="2017-08-12T03:51:10.186Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="单机配置多个Git账号">
 <meta name="twitter:description" content="在一台电脑上同时使用多个Git账号时（如个人的Github账号和公司的Gitlab账号），有一些配置是需要注意的。否则，账号间会起冲突，使用起来有问题。
 当然，如果你以HTTP(S)的方式通信(clone、push代码什么的)，不会有任何问题。相信很少人这么做，毕竟每一次输入账号/密码还是很繁琐的。所以这里针对的是使用SSH的方式。
 当我们第一次使用Git时，通过下面的命令来生成公钥和私钥：
 1s">
+<meta name="twitter:image" content="http://www.chenyp.com/img/2017/git1.png">
 
 
 
@@ -322,7 +324,7 @@
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-check-o"></i>
             </span>
-            <time title="Post modified" itemprop="dateModified" datetime="2017-08-12T11:44:34+08:00">
+            <time title="Post modified" itemprop="dateModified" datetime="2017-08-12T11:51:10+08:00">
               2017-08-12
             </time>
             
@@ -419,6 +421,10 @@
 <p>在用户主目录创建名称为<strong>config</strong>的文件，此文件用于配置Git服务器对应的私钥，按照我上面的示例，我需要添加的内容为：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">Host github.com</div><div class="line">RSAAuthentication yes</div><div class="line">IdentityFile ~/.ssh/id_rsa</div><div class="line"></div><div class="line"># Company GitLab server</div><div class="line">Host git.example.cn</div><div class="line">RSAAuthentication yes</div><div class="line">IdentityFile ~/.ssh/Gitlab_rsa</div></pre></td></tr></table></figure>
 <p><strong>Host</strong>和<strong>IdentityFile</strong>根据实际情况修改即可，Host 也可以输入IP，不要加上端口(即使部署的不是80或者443端口也不用加)。同理，如果还有第三个或更多，继续生成不同的文件并加入到config文件中即可，之后就可以使用了。</p>
+<p><strong>测试</strong></p>
+<p>通过如下的命令可以进行测试，格式：<em>ssh -T git@Host</em>，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ssh -T git@github.com</div><div class="line">ssh -T git@123.123.123.123</div></pre></td></tr></table></figure>
+<p><img src="/img/2017/git1.png" alt="这里写图片描述"></p>
 <p>由于我们之前设置了全局的用户信息，所以此时往Gitlab提交代码时，会以全局的身份提交(Github上的用户信息)，因此将Gitlab上的仓库clone后，进入到该仓库根路径，设置下Gitlab对应的用户信息，保证提交到Gitlab上的用户信息是正确的，否则用户信息会乱掉，如下:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">git config user.name &quot;ryan&quot;</div><div class="line">git config user.email &quot;ryan@example.cn&quot;</div></pre></td></tr></table></figure>
 <p>然后，尽情享受吧！</p>
