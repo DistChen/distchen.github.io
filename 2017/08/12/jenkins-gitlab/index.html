@@ -101,7 +101,7 @@
 <meta property="og:image" content="http://www.chenyp.com/img/2017/jg1.jpg">
 <meta property="og:image" content="http://www.chenyp.com/img/2017/jg3.png">
 <meta property="og:image" content="http://www.chenyp.com/img/2017/jg2.png">
-<meta property="og:updated_time" content="2017-08-12T10:23:12.052Z">
+<meta property="og:updated_time" content="2017-08-12T10:27:55.145Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Jenkins配置Gitlab">
 <meta name="twitter:description" content="部署示例
@@ -329,7 +329,7 @@
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-check-o"></i>
             </span>
-            <time title="Post modified" itemprop="dateModified" datetime="2017-08-12T18:23:12+08:00">
+            <time title="Post modified" itemprop="dateModified" datetime="2017-08-12T18:27:55+08:00">
               2017-08-12
             </time>
             
@@ -425,7 +425,7 @@
 <p>配置说明如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Connection name：[随便填入即可]</div><div class="line">Gitlab host URL：http://192.168.1.2:8082</div><div class="line">Credentials：[选择上面添加好的GitLab API token]</div></pre></td></tr></table></figure>
 <h3 id="Jenkins中设置demo项目"><a href="#Jenkins中设置demo项目" class="headerlink" title="Jenkins中设置demo项目"></a>Jenkins中设置demo项目</h3><p>在Jenkins中新建demo项目(对应gitlab中的demo仓库)，主要配置如下（自行根据层级关系对应到界面）：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">源码管理:</div><div class="line">    git：</div><div class="line">        Repositories: </div><div class="line">            Repository URL：git@192.168.1.2:admin/demo.git</div><div class="line">            Credentials：[选择上面已经设置的SSH Username with private key]</div><div class="line">        Branches to build：</div><div class="line">            Branch Specifier (blank for &apos;any&apos;)：[默认为*/master，根据实际情况决定]</div><div class="line">        源码库浏览器：gitlab</div><div class="line">            URL：http://192.168.1.2:8082/admin/demo</div><div class="line">            Version：[rpm -qa|grep gitlab查看后输入，比如查到9.4.3，输入9.4就行了]</div><div class="line"></div><div class="line">构建触发器：[可选配置，如果没有自动构建要求可跳过，下面演示根据gitlab的push event触发自动构建]</div><div class="line">    选择 Build when a change is pushed to GitLab. GitLab CI Service URL：http://192.168.1.1:8081/project/demo</div><div class="line">    （请注意：这个url其实是Gitlab hook plugin为Gitlab生成的webhook地址，等会需要配置在gitlab中。如果在系统设置中没有设置完整的Jenkins URL(http://192.168.1.1:8081)，这里会缺端口，后面需要自己补上）</div><div class="line">        然后选择 push event，其它根据实际需要勾选</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">源码管理:</div><div class="line">    git：</div><div class="line">        Repositories: </div><div class="line">            Repository URL：git@192.168.1.2:admin/demo.git</div><div class="line">            Credentials：[选择上面已经设置的SSH Username with private key]</div><div class="line">        Branches to build：</div><div class="line">            Branch Specifier (blank for &apos;any&apos;)：[默认为*/master，根据实际情况决定]</div><div class="line">        源码库浏览器：gitlab</div><div class="line">            URL：http://192.168.1.2:8082/admin/demo</div><div class="line">            Version：[rpm -qa|grep gitlab查看后输入，比如查到9.4.3，输入9.4就行了]</div><div class="line"></div><div class="line">构建触发器：[可选配置，如果没有自动构建要求可跳过，下面演示根据gitlab的push event触发自动构建]</div><div class="line">    选择 Build when a change is pushed to GitLab. GitLab CI Service URL：http://192.168.1.1:8081/project/demo</div><div class="line">    （请注意：这个url其实是Gitlab hook plugin为Gitlab生成的webhook地址，等会需要配置在Gitlab中。如果在系统设置中没有设置完整的Jenkins URL(http://192.168.1.1:8081)，这里会缺端口，后面需要自己补上）</div><div class="line">        然后选择 push event，其它根据实际需要勾选</div></pre></td></tr></table></figure>
 <p>至于构建环境、构建后的其它操作什么的根据实际情况决定即可，点击确定，整个配置就基本结束了，现在就可以开始构建。</p>
 <p>补充：如果构建触发器选择了<strong>Build when a change is pushed to GitLab. GitLab CI Service URL</strong>，那么需要在gitlab中的demo仓库中设置下webhook，否则不用配置，配置方式如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">进入demo仓库 -&gt; setting -&gt; Integrations</div><div class="line">    输入URL：http://192.168.1.1:8081/project/demo</div><div class="line">    选择：push event(其它的根据实际情况决定)</div></pre></td></tr></table></figure>

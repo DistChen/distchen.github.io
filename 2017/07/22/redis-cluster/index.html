@@ -114,7 +114,7 @@
 <meta property="og:image" content="http://www.chenyp.com/img/2017/redis2.png">
 <meta property="og:image" content="http://www.chenyp.com/img/2017/redis3.png">
 <meta property="og:image" content="http://www.chenyp.com/img/2017/redis4.png">
-<meta property="og:updated_time" content="2017-07-26T07:33:43.764Z">
+<meta property="og:updated_time" content="2017-08-12T13:40:20.682Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Redis 安装及集群搭建">
 <meta name="twitter:description" content="下载解压去官网自行下载相应的包即可，下载完后，如下解压即可：
@@ -348,8 +348,8 @@
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-check-o"></i>
             </span>
-            <time title="Post modified" itemprop="dateModified" datetime="2017-07-26T15:33:43+08:00">
-              2017-07-26
+            <time title="Post modified" itemprop="dateModified" datetime="2017-08-12T21:40:20+08:00">
+              2017-08-12
             </time>
             
           </span>
@@ -447,9 +447,9 @@
 <h4 id="创建集群"><a href="#创建集群" class="headerlink" title="创建集群"></a>创建集群</h4><p>Redis 官方提供了 redis-trib.rb 这个工具，就在解压目录的 src 目录中，将它复制到 /usr/local/bin 目录中，可以直接在命令行中使用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cp redis-trib.rb /usr/local/bin/</div></pre></td></tr></table></figure></p>
 <p>这个工具是用 ruby 实现的，所以需要安装 ruby，安装命令如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">yum -y install ruby ruby-devel rubygems rpm-build</div><div class="line">gem install redis</div></pre></td></tr></table></figure></p>
 <p>启动集群<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">redis-trib.rb  create  --replicas  1  192.168.1.188:7000 192.168.1.188:7001 192.168.1.188:7002 192.168.1.188:7003 192.168.1.188:7004 192.168.1.188:7005</div></pre></td></tr></table></figure></p>
-<p>集群测试<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">redis-cli -h 192.168.1.188 -c -p 7001</div><div class="line">et host=demo</div></pre></td></tr></table></figure></p>
+<p>集群测试<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">redis-cli -h 192.168.1.188 -c -p 7001</div><div class="line">set host demo</div></pre></td></tr></table></figure></p>
 <p><img src="/img/2017/redis3.png" alt="这里写图片描述"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">redis-cli -h 192.168.1.188 -c -p 7005</div><div class="line">get host=demo</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">redis-cli -h 192.168.1.188 -c -p 7005</div><div class="line">get host</div></pre></td></tr></table></figure>
 <p><img src="/img/2017/redis4.png" alt="这里写图片描述"></p>
 
       
