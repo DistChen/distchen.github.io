@@ -96,7 +96,7 @@
 当然，如果你以HTTP(S)的方式通信(clone、push代码什么的)，不会有任何问题。相信很少人这么做，毕竟每一次输入账号/密码还是很繁琐的。所以这里针对的是使用SSH的方式。
 当我们第一次使用Git时，通过下面的命令来生成公钥和私钥：
 1s">
-<meta property="og:updated_time" content="2017-08-12T03:03:36.073Z">
+<meta property="og:updated_time" content="2017-08-12T03:31:26.516Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="单机配置多个Git账号">
 <meta name="twitter:description" content="在一台电脑上同时使用多个Git账号时（如个人的Github账号和公司的Gitlab账号），有一些配置是需要注意的。否则，账号间会起冲突，使用起来有问题。
@@ -322,7 +322,7 @@
             <span class="post-meta-item-icon">
               <i class="fa fa-calendar-check-o"></i>
             </span>
-            <time title="Post modified" itemprop="dateModified" datetime="2017-08-12T11:03:36+08:00">
+            <time title="Post modified" itemprop="dateModified" datetime="2017-08-12T11:31:26+08:00">
               2017-08-12
             </time>
             
@@ -411,10 +411,15 @@
 <p>按照之前的套路，再把<strong>Gitlab_rsa.pub</strong>里面的内容添加到Gitlab即可。</p>
 <p>如果只是这样，从Gitlab上clone代码时，相较于第一次的区别，会提示你输入密码，但其实你根本不知道密码是什么。</p>
 <p>为什么会这样，因为私钥文件不对。在没有任何额外配置的情况下，Git客户端会使用默认的私钥文件id_rsa，而不是为Gitlab生成的Gitlab_rsa。因此我们需要添加一些配置来保证Git客户端在和不同的Git Server通信时使用对应的私钥文件。</p>
+<p><strong>临时解决方案</strong></p>
+<p>将新的私钥加入到 ssh-agent 中即可。ssh-agent是一种控制用来保存公钥身份验证所使用的私钥的程序，其实ssh-agent就是一个密钥管理器，运行ssh-agent以后，使用ssh-add将私钥交给ssh-agent保管，其他程序需要身份验证的时候可以将验证申请交给ssh-agent来完成整个认证过程，执行如下命令添加新的私钥到ssh-agent中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">eval $(ssh-agent -s)</div><div class="line">ssh-add ~/.ssh/Gitlab_rsa</div></pre></td></tr></table></figure>
+<p>之后就可以正常使用了，不过这种方案是临时的，一旦你关闭掉当前的terminal，下次又要重复输入上面的命令，下面的方案可以避免这种重复输入的麻烦。</p>
+<p><strong>永久解决方案</strong></p>
 <p>在用户主目录创建名称为<strong>config</strong>的文件，此文件用于配置Git服务器对应的私钥，按照我上面的示例，我需要添加的内容为：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># Company GitLab server</div><div class="line">Host git.example.cn</div><div class="line">RSAAuthentication yes</div><div class="line">IdentityFile ~/.ssh/Gitlab_rsa</div></pre></td></tr></table></figure>
-<p><strong>Host</strong>和<strong>IdentityFile</strong>根据实际情况修改即可。同理，如果还有第三个或更多，继续生成不同的文件并加入到config文件中即可，之后就可以使用了。</p>
-<p>由于我们之前设置了全局的用户信息，所以此时往Gitlab提交代码时，会以全局的身份提交，因此需要在项目的根路径下设置下Gitlab对应的用户信息，如下:</p>
+<p><strong>Host</strong>和<strong>IdentityFile</strong>根据实际情况修改即可，Host 也可以输入IP，不要加上端口(即使部署的不是80或者443端口也不用加)。同理，如果还有第三个或更多，继续生成不同的文件并加入到config文件中即可，之后就可以使用了。</p>
+<p>由于我们之前设置了全局的用户信息，所以此时往Gitlab提交代码时，会以全局的身份提交(Github上的用户信息)，因此将Gitlab上的仓库clone后，进入到该仓库根路径，设置下Gitlab对应的用户信息，保证提交到Gitlab上的用户信息是正确的，否则用户信息会乱掉，如下:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">git config user.name &quot;ryan&quot;</div><div class="line">git config user.email &quot;ryan@example.cn&quot;</div></pre></td></tr></table></figure>
 <p>然后，尽情享受吧！</p>
 
