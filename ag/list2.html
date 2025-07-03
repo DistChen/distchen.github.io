@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>业主与物业沟通事项分级表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c5aa0 0%, #1e3c72 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .table-container {
+            padding: 30px;
+        }
+        
+        .priority-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        .priority-table thead {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        
+        .priority-table th {
+            padding: 18px 20px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+            font-size: 16px;
+        }
+        
+        .priority-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f8f9fa;
+            vertical-align: top;
+        }
+        
+        .priority-table tbody tr:hover {
+            background: #f8f9fa;
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
+        }
+        
+        .priority-high {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 8px 16px;
+            display: inline-block;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+        }
+        
+        .priority-medium {
+            background: linear-gradient(135deg, #ffa726 0%, #ff9800 100%);
+            color: white;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 8px 16px;
+            display: inline-block;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(255, 167, 38, 0.3);
+        }
+        
+        .priority-low {
+            background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+            color: white;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 8px 16px;
+            display: inline-block;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+        }
+        
+        .content-cell {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .table-container {
+                padding: 15px;
+            }
+            
+            .priority-table {
+                font-size: 14px;
+            }
+            
+            .priority-table th,
+            .priority-table td {
+                padding: 12px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>业主与物业沟通事项分级表</h1>
+            <p>根据紧迫性、重要性、基本权益保障相关程度及普遍关注度分级</p>
+        </div>
+        
+        <div class="table-container">
+            <table class="priority-table">
+                <thead>
+                    <tr>
+                        <th style="width: 120px;">优先级别</th>
+                        <th>具体事项内容</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 高优先级事项 -->
+                    <tr>
+                        <td><span class="priority-high">高</span></td>
+                        <td class="content-cell">机动车车位租赁费及管理费重谈</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-high">高</span></td>
+                        <td class="content-cell">封阳台管理标准及费用承担</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-high">高</span></td>
+                        <td class="content-cell">门禁梯控系统及外卖管理</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-high">高</span></td>
+                        <td class="content-cell">绿化维护计划及树木管理</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-high">高</span></td>
+                        <td class="content-cell">电瓶车停放充电及人车分流</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-high">高</span></td>
+                        <td class="content-cell">垃圾分类收集及处理方式</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-high">高</span></td>
+                        <td class="content-cell">物业费收支及账目公开</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-high">高</span></td>
+                        <td class="content-cell">维修基金标准、使用规范及透明保障</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-high">高</span></td>
+                        <td class="content-cell">公共收益收支明细公开（广告、租赁等）</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-high">高</span></td>
+                        <td class="content-cell">消防设施检查及演练频次</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-high">高</span></td>
+                        <td class="content-cell">电梯维保及外包方资质</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-high">高</span></td>
+                        <td class="content-cell">地下车库电动车安全管理及消防</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-high">高</span></td>
+                        <td class="content-cell">排水系统维护及反水问题处理</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-high">高</span></td>
+                        <td class="content-cell">成立业委会及相关介绍</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-high">高</span></td>
+                        <td class="content-cell">书面服务清单及内容频率明确</td>
+                    </tr>
+                    
+                    <!-- 中优先级事项 -->
+                    <tr>
+                        <td><span class="priority-medium">中</span></td>
+                        <td class="content-cell">车位管理及充电桩安装规范</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-medium">中</span></td>
+                        <td class="content-cell">监控系统覆盖及维护周期</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-medium">中</span></td>
+                        <td class="content-cell">物业服务人员配置及资质</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-medium">中</span></td>
+                        <td class="content-cell">中央空调等大型设备维护</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-medium">中</span></td>
+                        <td class="content-cell">恶劣天气防护措施及规范</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-medium">中</span></td>
+                        <td class="content-cell">儿童活动区域管理及安全保障</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-medium">中</span></td>
+                        <td class="content-cell">保障房软隔离设施</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-medium">中</span></td>
+                        <td class="content-cell">屋面光伏系统维护及收益分配</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-medium">中</span></td>
+                        <td class="content-cell">装修维保及收费标准</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-medium">中</span></td>
+                        <td class="content-cell">临停车及访客停车管理</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-medium">中</span></td>
+                        <td class="content-cell">单元楼巡检计划公示</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-medium">中</span></td>
+                        <td class="content-cell">汛期清理及落水管维护</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-medium">中</span></td>
+                        <td class="content-cell">水景设施安全及维护</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-medium">中</span></td>
+                        <td class="content-cell">高空抛物监控预防</td>
+                    </tr>
+                    
+                    <!-- 低优先级事项 -->
+                    <tr>
+                        <td><span class="priority-low">低</span></td>
+                        <td class="content-cell">保洁工作安排及频次</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-low">低</span></td>
+                        <td class="content-cell">公共区域消杀及灭虫</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-low">低</span></td>
+                        <td class="content-cell">社区活动及节日安排</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-low">低</span></td>
+                        <td class="content-cell">客户接待及便民服务配置</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-low">低</span></td>
+                        <td class="content-cell">垃圾房设施优化及环境改善</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-low">低</span></td>
+                        <td class="content-cell">地下车库除湿设备</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-low">低</span></td>
+                        <td class="content-cell">外立面清洗及公共照明</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-low">低</span></td>
+                        <td class="content-cell">顶楼设施管理（晾晒区、门禁）</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-low">低</span></td>
+                        <td class="content-cell">道路通行承诺落实</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-low">低</span></td>
+                        <td class="content-cell">果树采摘及绿植优化建议</td>
+                    </tr>
+                    <tr>
+                        <td><span class="priority-low">低</span></td>
+                        <td class="content-cell">宠物管理及公共道路清洁</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="footer">
+            <p>* 分级标准：高级-涉及安全、费用、基本权益；中级-生活便利性；低级-优化改善建议</p>
+        </div>
+    </div>
+</body>
+</html>
